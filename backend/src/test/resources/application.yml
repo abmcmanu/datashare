@@ -1,7 +1,6 @@
-# Configuration des tests Spring Boot — H2 en mémoire pour la rapidité ;
-# Testcontainers Postgres sera utilisé pour les tests d'intégration.
-
 spring:
+  application:
+    name: datashare-backend
   flyway:
     enabled: false
   jpa:
