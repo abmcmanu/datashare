@@ -1,0 +1,42 @@
+<header class="ds-header">
+  <h1 class="ds-logo">DataShare</h1>
+  <button type="button" class="ds-login">Se connecter</button>
+</header>
+
+<main class="ds-main">
+  <h2 class="ds-question">Tu veux partager un fichier&nbsp;?</h2>
+
+  <button type="button" class="ds-upload" aria-label="Téléverser un fichier">
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
+      <path fill="currentColor"
+            d="M19.35 10.04A7.49 7.49 0 0 0 12 4a7.5 7.5 0 0 0-6.93 4.66A6 6 0 0 0 6 20h13a5 5 0 0 0 .35-9.96Zm-7.35-.04 4 4h-3v4h-2v-4H8l4-4Z"/>
+    </svg>
+  </button>
+
+  <!-- Ping E2E : visible côté UI pour valider la chaîne front ↔ back ↔ BDD -->
+  <section class="ds-ping" aria-live="polite">
+    <h3>État du back-end</h3>
+
+    @switch (state().kind) {
+      @case ('loading') {
+        <p class="ds-ping-loading">Ping en cours vers <code>/api/v1/health</code>…</p>
+      }
+      @case ('ok') {
+        <p class="ds-ping-ok">
+          ✓ <strong>{{ state().data?.status }}</strong>
+          — {{ state().data?.service }} v{{ state().data?.version }}
+        </p>
+        <small>{{ state().data?.timestamp }}</small>
+      }
+      @case ('error') {
+        <p class="ds-ping-error">
+          ✗ Le back-end ne répond pas&nbsp;: {{ state().message }}
+        </p>
+      }
+    }
+  </section>
+</main>
+
+<footer class="ds-footer">
+  <small>Copyright DataShare® 2025</small>
+</footer>
