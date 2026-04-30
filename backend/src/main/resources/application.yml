@@ -1,7 +1,6 @@
 spring:
   application:
     name: datashare-backend
-
   servlet:
     multipart:
       enabled: true
