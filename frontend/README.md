@@ -11,7 +11,7 @@ npm start         # ng serve --proxy-config proxy.conf.json
 
 Ouvrir `http://localhost:4200`.
 
-Le proxy `/api` est redirigé vers `http://localhost:8080` (le back-end Spring Boot).
+Le proxy `/api` est redirigé vers `http://localhost:7777` (le back-end Spring Boot).
 La page d'accueil affiche le résultat du **ping E2E** vers `/api/v1/health` —
 si tu vois `✓ UP — datashare-backend v0.1.0`, la chaîne fonctionne.
 

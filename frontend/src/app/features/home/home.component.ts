@@ -1,27 +1,35 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 import { ApiService, HealthResponse } from '../../core/services/api.service';
+import { AuthService } from '../../core/auth/auth.service';
 
 type PingState =
   | { kind: 'loading' }
   | { kind: 'ok'; data: HealthResponse }
   | { kind: 'error'; message: string };
 
-/**
- * Page d'accueil — réplique de la maquette « Tu veux partager un fichier ? »
- * et affiche en bas le résultat du ping E2E vers /api/v1/health, prouvant
- * que la chaîne front → proxy → back est opérationnelle dès l'init.
- */
 @Component({
   selector: 'ds-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
+
   protected readonly state = signal<PingState>({ kind: 'loading' });
+  protected readonly auth = inject(AuthService);
+
+  protected readonly okData = computed(() => {
+    const s = this.state();
+    return s.kind === 'ok' ? s.data : null;
+  });
+  protected readonly errorMessage = computed(() => {
+    const s = this.state();
+    return s.kind === 'error' ? s.message : null;
+  });
 
   constructor(private readonly api: ApiService) {}
 
@@ -34,5 +42,9 @@ export class HomeComponent implements OnInit {
           message: err?.message ?? 'Erreur de connexion au back-end'
         })
     });
+  }
+
+  logout(): void {
+    this.auth.logout();
   }
 }

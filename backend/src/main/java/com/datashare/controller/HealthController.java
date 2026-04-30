@@ -10,10 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.OffsetDateTime;
 import java.util.Map;
 
-/**
- * Endpoint de santé public — sert également de "ping" pour le front-end.
- * Permet de valider de bout en bout l'enchaînement Angular → Spring Boot dès l'init.
- */
 @RestController
 @RequestMapping("/api/v1/health")
 @Tag(name = "Health", description = "Supervision de l'application")

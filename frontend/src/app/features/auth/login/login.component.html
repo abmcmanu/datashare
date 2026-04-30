@@ -1,0 +1,50 @@
+<header class="ds-header">
+  <a routerLink="/" class="ds-logo">DataShare</a>
+  <a routerLink="/login" class="ds-login">Se connecter</a>
+</header>
+
+<main class="ds-main">
+  <form class="ds-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <h2 class="ds-card-title">Connexion</h2>
+
+    <label class="ds-field">
+      <span>Email</span>
+      <input
+        type="email"
+        autocomplete="email"
+        formControlName="email"
+        placeholder="Saisissez votre email…"
+        [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid">
+      @if (form.controls.email.touched && form.controls.email.errors?.['email']) {
+        <small class="ds-error">Format d’email invalide.</small>
+      }
+      @if (form.controls.email.touched && form.controls.email.errors?.['required']) {
+        <small class="ds-error">L’email est requis.</small>
+      }
+    </label>
+
+    <label class="ds-field">
+      <span>Mot de passe</span>
+      <input
+        type="password"
+        autocomplete="current-password"
+        formControlName="password"
+        placeholder="Saisissez votre mot de passe…">
+      @if (form.controls.password.touched && form.controls.password.errors?.['required']) {
+        <small class="ds-error">Le mot de passe est requis.</small>
+      }
+    </label>
+
+    <a routerLink="/signup" class="ds-link">Créer un compte</a>
+
+    @if (errorMessage()) {
+      <p class="ds-form-error" role="alert">{{ errorMessage() }}</p>
+    }
+
+    <button type="submit"
+            class="ds-submit"
+            [disabled]="form.invalid || submitting()">
+      {{ submitting() ? 'Connexion…' : 'Connexion' }}
+    </button>
+  </form>
+</main>
