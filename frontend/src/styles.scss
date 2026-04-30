@@ -1,16 +1,49 @@
-/* Styles globaux DataShare — palette inspirée de la maquette */
+/* =====================================================================
+   DataShare — styles globaux (pixel-perfect maquette Figma)
+   ===================================================================== */
+
+/* ---- Police « Main Font » ----
+   Le designer utilise une police nommée « Main Font » dans Figma.
+   Si elle n'est pas exposée publiquement, le navigateur tombe sur les
+   fallbacks géométriques modernes. Pour activer une police de remplacement
+   plus proche, lier ici un @import Google Fonts (ex: Outfit). */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
 
 :root {
-  --ds-bg-from: #f8c8a4;
-  --ds-bg-to: #e8806a;
-  --ds-text: #1a1a1a;
-  --ds-muted: #6b6b6b;
-  --ds-card: #ffffff;
-  --ds-border: #e5e1dc;
-  --ds-accent: #2b2b2b;
-  --ds-accent-soft: #fde4d3;
-  --ds-error: #b3261e;
-  --ds-success: #1e6c3a;
+  /* Police principale */
+  --ds-font-main:
+    'Main Font', 'Outfit',
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', sans-serif;
+
+  /* Couleurs primaires (issues de la maquette) */
+  --ds-orange:        #E27F29;
+  --ds-orange-soft:   #FDE8D9;
+  --ds-orange-border: rgba(205, 94, 20, 0.5);  /* #CD5E1480 */
+  --ds-orange-strong: #CD5E14;
+
+  /* Fond dégradé peach → coral */
+  --ds-bg-from: #F8C8A4;
+  --ds-bg-to:   #E8806A;
+
+  /* Texte */
+  --ds-text:        #1F1B1F;
+  --ds-muted:       #6B6B6B;
+  --ds-placeholder: #B5B0AC;
+
+  /* UI */
+  --ds-card:    #FFFFFF;
+  --ds-border:  #E5E1DC;
+  --ds-accent:  #1F1B1F;        /* boutons sombres (header) */
+
+  /* États */
+  --ds-error:   #B3261E;
+  --ds-success: #1E6C3A;
+
+  /* Rayons */
+  --ds-radius-card:   20px;
+  --ds-radius-input:  10px;
+  --ds-radius-button: 12px;
 }
 
 * { box-sizing: border-box; }
@@ -19,20 +52,21 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-family: var(--ds-font-main);
+  font-weight: 400;
   color: var(--ds-text);
   background: linear-gradient(180deg, var(--ds-bg-from) 0%, var(--ds-bg-to) 100%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 a { color: inherit; }
+button, input { font-family: inherit; }
+button { cursor: pointer; }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-}
-
-/* Accessibilité : focus visible */
+/* Accessibilité — focus visible */
 :focus-visible {
   outline: 2px solid var(--ds-accent);
   outline-offset: 2px;
