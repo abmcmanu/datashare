@@ -1,0 +1,66 @@
+# =====================================================
+# DataShare – .gitignore
+# =====================================================
+
+# ---- Backend (Maven / Java) ----
+backend/target/
+backend/.mvn/
+backend/*.iml
+backend/HELP.md
+backend/.classpath
+backend/.project
+backend/.settings/
+*.class
+*.jar
+*.war
+
+# ---- Backend - Secrets ----
+backend/src/main/resources/application-local.yml
+backend/src/main/resources/application-prod.yml.bak
+*.env
+.env
+.env.*
+!.env.example
+
+# ---- Frontend (Node / Angular) ----
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+frontend/out-tsc/
+frontend/.npm/
+frontend/npm-debug.log*
+
+# ---- IDE ----
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# ---- Logs ----
+*.log
+logs/
+/tmp/
+
+# ---- Uploads (fichiers utilisateurs – ne pas versionner) ----
+backend/uploads/
+datashare-uploads/
+uploads/
+
+# ---- Sauvegardes BDD ----
+*.sql.bak
+backup_*.sql
+*.tar.gz
+
+# ---- Couverture ----
+backend/target/site/jacoco/
+frontend/coverage/
+
+# ---- local usage ----
+screenshoot
+P3+EDO+P4+AL+-+Spécifications+pour+l’application.pdf
