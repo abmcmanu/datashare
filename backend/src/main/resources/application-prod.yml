@@ -1,0 +1,21 @@
+# Profil PRODUCTION — toutes les valeurs sensibles via variables d'environnement
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${DATASHARE_DB_URL}
+    username: ${DATASHARE_DB_USER}
+    password: ${DATASHARE_DB_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DATASHARE_DB_POOL_SIZE:20}
+
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    root: INFO
+    com.datashare: INFO

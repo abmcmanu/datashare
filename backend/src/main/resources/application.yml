@@ -1,0 +1,74 @@
+spring:
+  application:
+    name: datashare-backend
+
+  servlet:
+    multipart:
+      enabled: true
+      # Limite alignée sur la spécification (US01) : taille maximale 1 Go
+      max-file-size: 1GB
+      max-request-size: 1GB
+      file-size-threshold: 10MB    # streaming au-delà de ce seuil
+
+  jpa:
+    open-in-view: false            # bonne pratique : pas de transactions HTTP
+    hibernate:
+      ddl-auto: validate           # le schéma est piloté par Flyway, jamais par Hibernate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        format_sql: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+server:
+  port: 7777
+  servlet:
+    context-path: /
+  tomcat:
+    max-swallow-size: 1GB
+    max-http-form-post-size: 1GB
+
+# OpenAPI / Swagger UI
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+
+# Actuator : on expose seulement health par défaut
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Variables propres à l'application — surchargeables via env
+datashare:
+  storage:
+    # Dossier hors classpath. En dev : ./uploads relatif au cwd
+    local-path: ${DATASHARE_STORAGE_PATH:./uploads}
+  security:
+    jwt:
+      # IMPORTANT : à fournir en variable d'environnement en prod
+      secret: ${DATASHARE_JWT_SECRET:dev-only-secret-please-override-in-production-32chars-min}
+      # Durée de vie de l'access token (15 min)
+      expiration-ms: 900000
+  cors:
+    allowed-origins: ${DATASHARE_CORS_ORIGINS:http://localhost:4200}
+  upload:
+    max-bytes: 1073741824                     # 1 Go
+    forbidden-extensions: exe,bat,cmd,sh,com,msi,scr,vbs,ps1
+  download:
+    token-bytes: 32                            # 32 octets = 256 bits d'entropie
+  expiration:
+    default-days: 7
+    max-days: 7

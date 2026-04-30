@@ -1,0 +1,33 @@
+# Configuration des tests Spring Boot — H2 en mémoire pour la rapidité ;
+# Testcontainers Postgres sera utilisé pour les tests d'intégration.
+
+spring:
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.H2Dialect
+  datasource:
+    url: jdbc:h2:mem:datashare;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+datashare:
+  storage:
+    local-path: ./build/test-uploads
+  security:
+    jwt:
+      secret: test-only-secret-please-not-for-production-32chars-min
+      expiration-ms: 900000
+  cors:
+    allowed-origins: http://localhost:4200
+  upload:
+    max-bytes: 1073741824
+    forbidden-extensions: exe,bat
+  download:
+    token-bytes: 32
+  expiration:
+    default-days: 7
+    max-days: 7

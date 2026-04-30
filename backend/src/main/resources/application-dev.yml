@@ -1,0 +1,26 @@
+# Profil DÉVELOPPEMENT — utilisé via SPRING_PROFILES_ACTIVE=dev (défaut local)
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/datashare
+    username: datashare
+    password: datashare
+    hikari:
+      maximum-pool-size: 10
+
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    root: INFO
+    com.datashare: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
