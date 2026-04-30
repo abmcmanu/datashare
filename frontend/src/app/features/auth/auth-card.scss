@@ -1,0 +1,173 @@
+/* =====================================================================
+   Carte Login / Signup 
+   ===================================================================== */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 20px 24px 24px;
+  font-family: var(--ds-font-main);
+}
+
+/* ---------- Header ---------- */
+
+.ds-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ds-logo {
+  font-family: var(--ds-font-main);
+  font-size: 26px;
+  font-weight: 700;       /* « DataShare » bold 700 (demandé) */
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  color: var(--ds-text);
+}
+
+.ds-login {
+  background: var(--ds-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--ds-radius-button);
+  padding: 10px 18px;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* ---------- Layout ---------- */
+
+.ds-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 0;
+}
+
+/* ---------- Carte ---------- */
+
+.ds-card {
+  width: 100%;
+  max-width: 460px;
+  background: var(--ds-card);
+  border-radius: var(--ds-radius-card);
+  padding: 32px 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    0 18px 40px rgba(0, 0, 0, 0.10);
+}
+
+.ds-card-title {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--ds-text);
+}
+
+/* ---------- Champs ---------- */
+
+.ds-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  > span {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ds-text);
+  }
+
+  > input {
+    font: inherit;
+    font-size: 14px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-input);
+    padding: 12px 14px;
+    background: #FFFFFF;
+    color: var(--ds-text);
+
+    &::placeholder {
+      color: var(--ds-placeholder);
+      opacity: 1;
+    }
+
+    &:focus {
+      border-color: var(--ds-orange);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(226, 127, 41, 0.16);
+    }
+
+    &[aria-invalid="true"] {
+      border-color: var(--ds-error);
+    }
+  }
+}
+
+.ds-error {
+  color: var(--ds-error);
+  font-size: 12px;
+}
+
+.ds-form-error {
+  margin: 0;
+  background: #FDE2E0;
+  color: var(--ds-error);
+  border-radius: var(--ds-radius-input);
+  padding: 10px 14px;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ---------- Lien orange (« Créer un compte » / « J'ai déjà un compte ») ---------- */
+
+.ds-link {
+  align-self: center;
+  margin-top: 2px;
+  color: var(--ds-orange);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+
+  &:hover { text-decoration: underline; }
+}
+
+/* ---------- Bouton submit (couleurs imposées par le brief) ---------- */
+
+.ds-submit {
+  margin-top: 6px;
+  background: var(--ds-orange-soft);    /* #FDE8D9 */
+  color: var(--ds-orange);              /* #E27F29 */
+  border: 1px solid var(--ds-orange-border);  /* #CD5E1480 */
+  border-radius: var(--ds-radius-button);
+  padding: 14px 20px;
+  font-family: var(--ds-font-main);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  transition: filter .15s ease, box-shadow .15s ease;
+
+  &:hover:not([disabled]) {
+    filter: brightness(0.97);
+    box-shadow: 0 1px 3px rgba(205, 94, 20, 0.15);
+  }
+  &:active:not([disabled]) {
+    transform: translateY(1px);
+  }
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}

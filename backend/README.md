@@ -12,7 +12,7 @@ docker compose -f ../ops/docker-compose.dev.yml up -d
 SPRING_PROFILES_ACTIVE=dev mvn spring-boot:run
 ```
 
-L'API écoute sur `http://localhost:8080`.
+L'API écoute sur `http://localhost:7777`.
 
 | Endpoint | Description |
 |---|---|

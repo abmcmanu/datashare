@@ -56,9 +56,9 @@ cd backend
 mvn spring-boot:run
 ```
 
-L'API démarre sur `http://localhost:8080`.
-Documentation OpenAPI auto-générée : `http://localhost:8080/swagger-ui.html`.
-Endpoint de santé : `http://localhost:8080/api/v1/health`.
+L'API démarre sur `http://localhost:7777`.
+Documentation OpenAPI auto-générée : `http://localhost:7777/swagger-ui.html`.
+Endpoint de santé : `http://localhost:7777/api/v1/health`.
 
 ### 3) Lancer le front-end
 

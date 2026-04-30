@@ -1,6 +1,14 @@
 <header class="ds-header">
-  <h1 class="ds-logo">DataShare</h1>
-  <button type="button" class="ds-login">Se connecter</button>
+  <a routerLink="/" class="ds-logo">DataShare</a>
+
+  @if (auth.isAuthenticated()) {
+    <div class="ds-user">
+      <span class="ds-user-email">{{ auth.currentUser()?.email }}</span>
+      <button type="button" class="ds-login" (click)="logout()">Déconnexion</button>
+    </div>
+  } @else {
+    <a routerLink="/login" class="ds-login">Se connecter</a>
+  }
 </header>
 
 <main class="ds-main">
@@ -13,28 +21,13 @@
     </svg>
   </button>
 
-  <!-- Ping E2E : visible côté UI pour valider la chaîne front ↔ back ↔ BDD -->
-  <section class="ds-ping" aria-live="polite">
-    <h3>État du back-end</h3>
-
-    @switch (state().kind) {
-      @case ('loading') {
-        <p class="ds-ping-loading">Ping en cours vers <code>/api/v1/health</code>…</p>
-      }
-      @case ('ok') {
-        <p class="ds-ping-ok">
-          ✓ <strong>{{ state().data?.status }}</strong>
-          — {{ state().data?.service }} v{{ state().data?.version }}
-        </p>
-        <small>{{ state().data?.timestamp }}</small>
-      }
-      @case ('error') {
-        <p class="ds-ping-error">
-          ✗ Le back-end ne répond pas&nbsp;: {{ state().message }}
-        </p>
-      }
-    }
-  </section>
+  @if (state().kind === 'error') {
+    <section class="ds-ping" aria-live="assertive" role="alert">
+      <p class="ds-ping-error">
+        Service indisponible pour le moment. Veuillez réessayer dans quelques instants.
+      </p>
+    </section>
+  }
 </main>
 
 <footer class="ds-footer">
