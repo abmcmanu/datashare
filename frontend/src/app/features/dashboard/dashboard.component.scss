@@ -502,3 +502,110 @@
 .ds-access-btn {
   text-decoration: none;
 }
+
+/* ---------- Modal Confirmation US06 ---------- */
+
+.ds-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.ds-modal {
+  background: #ffffff;
+  border-radius: var(--ds-radius-card);
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ds-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--ds-border);
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ds-text);
+  }
+}
+
+.ds-modal-body {
+  padding: 24px;
+  font-size: 15px;
+  color: var(--ds-text);
+  line-height: 1.5;
+
+  p {
+    margin: 0 0 12px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.ds-text-danger {
+  color: #c5221f;
+  font-size: 14px;
+}
+
+.ds-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  background: #fafafa;
+  border-top: 1px solid var(--ds-border);
+}
+
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--ds-radius-button);
+  font-family: var(--ds-font-main);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.ds-btn-secondary {
+  background: #ffffff;
+  color: var(--ds-text);
+  border-color: var(--ds-border);
+
+  &:hover:not(:disabled) {
+    background: #f5f5f5;
+  }
+}
+
+.ds-btn-danger {
+  background: #c5221f;
+  color: #ffffff;
+
+  &:hover:not(:disabled) {
+    background: #a51d1a;
+  }
+}

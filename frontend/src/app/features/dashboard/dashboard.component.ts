@@ -20,10 +20,12 @@ export class DashboardComponent implements OnInit {
   protected readonly fileService = inject(FileService);
 
   protected mobileMenuOpen = false;
-  protected currentTab = signal<'tous' | 'actifs' | 'expire'>('tous');
+  protected currentTab = signal<'tous' | 'actifs' | 'expire'>('actifs');
   protected loading = signal(true);
   protected error = signal<string | null>(null);
   protected files = signal<UserFileItem[]>([]);
+  protected fileToDelete = signal<UserFileItem | null>(null);
+  protected deleting = signal(false);
 
   protected filteredFiles = computed(() => {
     const tab = this.currentTab();
@@ -57,15 +59,32 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  protected deleteFile(file: UserFileItem): void {
+  protected askDelete(file: UserFileItem): void {
+    this.fileToDelete.set(file);
+  }
+
+  protected confirmDelete(): void {
+    const file = this.fileToDelete();
+    if (!file) return;
+
+    this.deleting.set(true);
+    this.error.set(null);
     this.fileService.deleteFile(file.id).subscribe({
       next: () => {
         this.files.update(list => list.filter(f => f.id !== file.id));
+        this.fileToDelete.set(null);
+        this.deleting.set(false);
       },
       error: () => {
         this.error.set('Impossible de supprimer ce fichier.');
+        this.fileToDelete.set(null);
+        this.deleting.set(false);
       }
     });
+  }
+
+  protected cancelDelete(): void {
+    this.fileToDelete.set(null);
   }
 
   protected formatExpiresLabel(file: UserFileItem): string {
