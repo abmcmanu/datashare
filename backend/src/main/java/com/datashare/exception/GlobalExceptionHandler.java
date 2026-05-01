@@ -42,6 +42,28 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
+    @ExceptionHandler(FileTooLargeException.class)
+    public ResponseEntity<ApiError> handleFileTooLarge(FileTooLargeException ex, HttpServletRequest req) {
+        ApiError body = ApiError.of(413, "Payload Too Large", "FILE_TOO_LARGE",
+            ex.getMessage(), req.getRequestURI());
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(body);
+    }
+
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiError> handleMaxUploadSize(
+        org.springframework.web.multipart.MaxUploadSizeExceededException ex, HttpServletRequest req) {
+        ApiError body = ApiError.of(413, "Payload Too Large", "FILE_TOO_LARGE",
+            "Le fichier dépasse la taille maximale autorisée (1 Go).", req.getRequestURI());
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(body);
+    }
+
+    @ExceptionHandler(UnsupportedFileTypeException.class)
+    public ResponseEntity<ApiError> handleUnsupportedType(UnsupportedFileTypeException ex, HttpServletRequest req) {
+        ApiError body = ApiError.of(415, "Unsupported Media Type", "FORBIDDEN_EXTENSION",
+            ex.getMessage(), req.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(body);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
         List<ApiError.FieldError> fields = ex.getBindingResult().getFieldErrors().stream()

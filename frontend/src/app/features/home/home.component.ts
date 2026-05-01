@@ -1,9 +1,11 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { ApiService, HealthResponse } from '../../core/services/api.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { UploadDialogComponent } from '../upload/upload-dialog.component';
+import { UserAvatarComponent } from '../../shared/user-avatar/user-avatar.component';
 
 type PingState =
   | { kind: 'loading' }
@@ -13,7 +15,7 @@ type PingState =
 @Component({
   selector: 'ds-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, UploadDialogComponent, UserAvatarComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -31,7 +33,13 @@ export class HomeComponent implements OnInit {
     return s.kind === 'error' ? s.message : null;
   });
 
-  constructor(private readonly api: ApiService) {}
+  /** Ouverture / fermeture de la modale d'upload (US01). */
+  protected readonly uploadOpen = signal(false);
+
+  constructor(
+    private readonly api: ApiService,
+    private readonly router: Router
+  ) {}
 
   ngOnInit(): void {
     this.api.health().subscribe({
@@ -44,7 +52,24 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  logout(): void {
+  /**
+   * Le bouton central déclenche l'upload :
+   *  - si l'utilisateur est connecté → ouvre la modale (US01)
+   *  - sinon → redirige vers /login (US01 réservée aux authentifiés)
+   */
+  protected onUploadClick(): void {
+    if (this.auth.isAuthenticated()) {
+      this.uploadOpen.set(true);
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
+
+  protected closeUpload(): void {
+    this.uploadOpen.set(false);
+  }
+
+  protected logout(): void {
     this.auth.logout();
   }
 }
