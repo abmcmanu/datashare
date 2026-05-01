@@ -31,9 +31,6 @@ Le périmètre fonctionnel impose une API REST sécurisée avec authentification
 - **Spring Data JPA** fournit un mapping objet-relationnel mature, idéal pour le modèle relationnel que les User Stories décrivent (utilisateur ↔ fichiers ↔ tags).
 - **Spring Scheduler** couvre US10 (purge quotidienne des fichiers expirés) sans dépendance externe.
 - L'écosystème Java offre les outils de qualité les plus matures (SonarQube, JaCoCo, Checkstyle), ce qui est cohérent avec l'attendu « TESTING.md / SECURITY.md / PERF.md / MAINTENANCE.md ».
-- L'équipe DataShare a déjà préparé le repo pour Maven (`.gitignore` ciblant `backend/target/`).
-
-> Pourquoi pas NestJS ? Excellent choix moderne, mais Spring Boot offre une stabilité supérieure pour la gestion de fichiers lourds (streaming) et un écosystème de sécurité plus mature pour un MVP destiné à des investisseurs.
 
 ### Front-end : Angular
 
