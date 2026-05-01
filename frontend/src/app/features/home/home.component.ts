@@ -52,16 +52,11 @@ export class HomeComponent implements OnInit {
   }
 
   /**
-   * Le bouton central déclenche l'upload :
-   *  - si l'utilisateur est connecté → ouvre la modale (US01)
-   *  - sinon → redirige vers /login (US01 réservée aux authentifiés)
+   * Le bouton central déclenche l'upload (US01 / US07) :
+   * Ouvre la modale d'upload pour tout le monde (authentifié ou non).
    */
   protected onUploadClick(): void {
-    if (this.auth.isAuthenticated()) {
-      this.uploadOpen.set(true);
-    } else {
-      this.router.navigate(['/login']);
-    }
+    this.uploadOpen.set(true);
   }
 
   protected closeUpload(): void {
