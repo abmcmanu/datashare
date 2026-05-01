@@ -5,7 +5,6 @@ import { Router, RouterLink } from '@angular/router';
 import { ApiService, HealthResponse } from '../../core/services/api.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { UploadDialogComponent } from '../upload/upload-dialog.component';
-import { UserAvatarComponent } from '../../shared/user-avatar/user-avatar.component';
 
 type PingState =
   | { kind: 'loading' }
@@ -15,7 +14,7 @@ type PingState =
 @Component({
   selector: 'ds-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, UploadDialogComponent, UserAvatarComponent],
+  imports: [CommonModule, RouterLink, UploadDialogComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -69,7 +68,4 @@ export class HomeComponent implements OnInit {
     this.uploadOpen.set(false);
   }
 
-  protected logout(): void {
-    this.auth.logout();
-  }
 }

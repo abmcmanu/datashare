@@ -1,0 +1,144 @@
+<div class="ds-dashboard-layout">
+  
+  <!-- Mobile Header -->
+  <header class="ds-dashboard-mobile-header">
+    <button class="ds-menu-btn" (click)="toggleMobileMenu()" aria-label="Menu">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+      </svg>
+    </button>
+    <div class="ds-user-info">
+      <ds-user-avatar [email]="auth.currentUser()?.email || 'claire@example.com'" [size]="32"></ds-user-avatar>
+      <span class="ds-user-name">{{ getUserName() }}</span>
+    </div>
+  </header>
+
+  <!-- Mobile Menu Overlay -->
+  @if (mobileMenuOpen) {
+    <div class="ds-mobile-overlay">
+      <div class="ds-mobile-overlay-header">
+        <button class="ds-close-btn" (click)="toggleMobileMenu()" aria-label="Fermer">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+        <div class="ds-overlay-title">DataShare</div>
+        <div class="ds-user-info">
+          <ds-user-avatar [email]="auth.currentUser()?.email || 'claire@example.com'" [size]="32"></ds-user-avatar>
+          <span class="ds-user-name">{{ getUserName() }}</span>
+        </div>
+      </div>
+      <nav class="ds-mobile-nav">
+        <a class="ds-nav-item active">Mes fichiers</a>
+      </nav>
+      <div class="ds-overlay-footer">
+        <small>Copyright DataShare® 2025</small>
+      </div>
+    </div>
+  }
+
+  <!-- Desktop Sidebar -->
+  <aside class="ds-sidebar">
+    <div class="ds-sidebar-header">
+      <a routerLink="/" class="ds-logo">DataShare</a>
+    </div>
+    <nav class="ds-sidebar-nav">
+      <a class="ds-nav-item active">Mes fichiers</a>
+    </nav>
+    <div class="ds-sidebar-footer">
+      <small>Copyright DataShare® 2025</small>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="ds-dashboard-main">
+    <!-- Desktop Topbar -->
+    <div class="ds-dashboard-topbar">
+      <div class="ds-spacer"></div>
+      <div class="ds-topbar-actions">
+        <button class="ds-add-file-btn" routerLink="/">Ajouter des fichiers</button>
+        <button class="ds-logout-btn" (click)="logout()">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="currentColor" d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+          </svg>
+          Déconnexion
+        </button>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="ds-content-area">
+      <h1 class="ds-page-title">Mes fichiers</h1>
+
+      <div class="ds-tabs-container">
+        <div class="ds-tabs">
+          <button class="ds-tab" [class.active]="currentTab === 'tous'" (click)="setTab('tous')">Tous</button>
+          <button class="ds-tab" [class.active]="currentTab === 'actifs'" (click)="setTab('actifs')">Actifs</button>
+          <button class="ds-tab" [class.active]="currentTab === 'expire'" (click)="setTab('expire')">Expiré</button>
+        </div>
+      </div>
+
+      <div class="ds-file-list">
+        @for (file of mockFiles; track file.id) {
+          <div class="ds-file-card" [class.expired]="file.isExpired">
+            <div class="ds-file-icon">
+              <!-- placeholder image icon -->
+              <svg viewBox="0 0 24 24" width="24" height="24">
+                <path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/>
+              </svg>
+            </div>
+            
+            <div class="ds-file-info">
+              <span class="ds-file-name">{{ file.name }}</span>
+              <span class="ds-file-expires" [class.is-expired]="file.isExpired">{{ file.expiresIn }}</span>
+            </div>
+            
+            <div class="ds-file-actions">
+              <!-- If expired on desktop, show this text -->
+              @if (file.isExpired) {
+                <div class="ds-desktop-expired-text">Ce fichier à expiré, il n'est plus stocké chez nous</div>
+              }
+
+              <div class="ds-lock-icon">
+                @if (file.isExpired) {
+                  <!-- Closed Lock -->
+                  <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+                  </svg>
+                } @else {
+                  <!-- Open Lock -->
+                  <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h2c0-1.66 1.34-3 3-3s3 1.34 3 3v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+                  </svg>
+                }
+              </div>
+              
+              @if (!file.isExpired) {
+                <!-- Mobile Only Action -->
+                <button class="ds-mobile-more-btn" aria-label="Plus d'options">
+                   <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path fill="currentColor" d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                   </svg>
+                </button>
+
+                <!-- Desktop Only Actions -->
+                <button class="ds-desktop-btn ds-delete-btn">
+                  <svg viewBox="0 0 24 24" width="16" height="16">
+                    <path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                  </svg>
+                  Supprimer
+                </button>
+                <button class="ds-desktop-btn ds-access-btn">
+                  Accéder
+                  <svg viewBox="0 0 24 24" width="16" height="16">
+                    <path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                  </svg>
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </main>
+</div>

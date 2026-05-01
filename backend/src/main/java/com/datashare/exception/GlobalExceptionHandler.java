@@ -64,6 +64,27 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(body);
     }
 
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<ApiError> handleFileNotFound(FileNotFoundException ex, HttpServletRequest req) {
+        ApiError body = ApiError.of(404, "Not Found", "FILE_NOT_FOUND",
+            ex.getMessage(), req.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(FileExpiredException.class)
+    public ResponseEntity<ApiError> handleFileExpired(FileExpiredException ex, HttpServletRequest req) {
+        ApiError body = ApiError.of(410, "Gone", "FILE_EXPIRED",
+            ex.getMessage(), req.getRequestURI());
+        return ResponseEntity.status(HttpStatus.GONE).body(body);
+    }
+
+    @ExceptionHandler(InvalidFilePasswordException.class)
+    public ResponseEntity<ApiError> handleInvalidFilePassword(InvalidFilePasswordException ex, HttpServletRequest req) {
+        ApiError body = ApiError.of(401, "Unauthorized", "INVALID_FILE_PASSWORD",
+            ex.getMessage(), req.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
         List<ApiError.FieldError> fields = ex.getBindingResult().getFieldErrors().stream()

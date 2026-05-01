@@ -2,11 +2,7 @@
   <a routerLink="/" class="ds-logo">DataShare</a>
 
   @if (auth.isAuthenticated()) {
-    <div class="ds-user">
-      <ds-user-avatar [email]="auth.currentUser()!.email" [size]="36"></ds-user-avatar>
-      <span class="ds-user-email">{{ auth.currentUser()?.email }}</span>
-      <button type="button" class="ds-login" (click)="logout()">Déconnexion</button>
-    </div>
+    <a routerLink="/dashboard" class="ds-login">Mon espace</a>
   } @else {
     <a routerLink="/login" class="ds-login">Se connecter</a>
   }

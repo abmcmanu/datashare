@@ -41,21 +41,7 @@
   cursor: pointer;
 }
 
-.ds-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
 
-  .ds-user-email {
-    font-size: 13px;
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(4px);
-    padding: 6px 12px;
-    border-radius: var(--ds-radius-button);
-    color: var(--ds-text);
-  }
-}
 
 /* ---------- Main ---------- */
 
@@ -100,29 +86,7 @@
   }
 }
 
-/* ---------- Avatar utilisateur (override responsive) ---------- */
 
-.ds-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  ds-user-avatar { flex-shrink: 0; }
-
-  .ds-user-email {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--ds-text);
-    max-width: 220px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  @media (max-width: 540px) {
-    .ds-user-email { display: none; }
-  }
-}
 
 /* ---------- Bannière d'indisponibilité ---------- */
 

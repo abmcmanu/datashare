@@ -1,0 +1,444 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: var(--ds-font-main);
+  background: #ffffff; /* Default to white for main area */
+}
+
+/* ==========================================================================
+   LAYOUT STRUCTURE
+   ========================================================================== */
+
+.ds-dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* --------------------------------------------------------------------------
+   MOBILE ELEMENTS
+   -------------------------------------------------------------------------- */
+
+.ds-dashboard-mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background-color: #fef4ed; /* Very light orange from mockup */
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+
+  .ds-menu-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    margin-left: -8px;
+    color: var(--ds-text);
+  }
+}
+
+.ds-user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .ds-user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ds-text);
+  }
+}
+
+/* Mobile Menu Overlay */
+.ds-mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, var(--ds-bg-from) 0%, var(--ds-bg-to) 100%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px 24px;
+}
+
+.ds-mobile-overlay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .ds-close-btn {
+    background: none;
+    border: none;
+    color: #ffffff;
+    padding: 8px;
+    margin-left: -8px;
+  }
+
+  .ds-overlay-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  .ds-user-info {
+    .ds-user-name {
+      color: #ffffff;
+      /* on mockup user name might be black or white, but overlay text is white usually. Wait! 
+         "iPhone 16 - 6" shows right side user info as black text, light background?
+         No, it shows "Claire Marie" in black on the semi-transparent area? 
+         Wait, looking at the image, right side of the screen is dimmed out, 
+         the menu is only taking 80% of width? 
+         Ah! iPhone 16 - 6 is a slide-over menu! The gradient is the menu. 
+         Wait, no, the close button is left, "DataShare" is white, and the right side of the screen is greyed out. 
+         So the overlay is not 100% width. Let's make it 80% width. */
+  }
+}
+}
+
+.ds-mobile-overlay {
+  width: 85%;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.2);
+}
+/* A backdrop for the remaining 15% */
+.ds-mobile-overlay::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 15%;
+  background: rgba(0,0,0,0.4);
+  z-index: -1;
+}
+
+.ds-mobile-nav {
+  margin-top: 40px;
+  flex: 1;
+
+  .ds-nav-item {
+    display: block;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: var(--ds-radius-button, 8px);
+    padding: 12px 16px;
+    color: #000;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+  }
+}
+
+.ds-overlay-footer {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   DESKTOP ELEMENTS
+   -------------------------------------------------------------------------- */
+
+.ds-sidebar {
+  display: none;
+  width: 260px;
+  background: linear-gradient(180deg, var(--ds-bg-from) 0%, var(--ds-bg-to) 100%);
+  flex-direction: column;
+  padding: 24px;
+}
+
+.ds-sidebar-header {
+  margin-bottom: 40px;
+
+  .ds-logo {
+    font-size: 26px;
+    font-weight: 700;
+    color: #ffffff;
+    text-decoration: none;
+  }
+}
+
+.ds-sidebar-nav {
+  flex: 1;
+
+  .ds-nav-item {
+    display: block;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: var(--ds-radius-button, 8px);
+    padding: 12px 16px;
+    color: #000;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+}
+
+.ds-sidebar-footer {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+}
+
+.ds-dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+.ds-dashboard-topbar {
+  display: none;
+  padding: 16px 32px;
+  background-color: #fef4ed;
+  justify-content: space-between;
+  align-items: center;
+
+  .ds-topbar-actions {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .ds-add-file-btn {
+    background-color: var(--ds-accent);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--ds-radius-button, 6px);
+    padding: 10px 16px;
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+
+  .ds-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--ds-bg-to);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   MAIN CONTENT AREA
+   -------------------------------------------------------------------------- */
+
+.ds-content-area {
+  padding: 24px 20px;
+  max-width: 900px;
+  margin: 0;
+}
+
+.ds-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 24px 0;
+  color: var(--ds-text);
+}
+
+.ds-tabs-container {
+  margin-bottom: 24px;
+}
+
+.ds-tabs {
+  display: inline-flex;
+  background: transparent;
+  border: 1px solid #e5e1dc;
+  border-radius: 20px;
+  overflow: hidden;
+  padding: 2px;
+  gap: 2px;
+
+  .ds-tab {
+    background: transparent;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 18px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ds-text);
+    transition: all 0.2s ease;
+
+    &.active {
+      background-color: var(--ds-bg-to);
+      color: #ffffff;
+    }
+  }
+}
+
+.ds-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ds-file-card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #f0e6e0; /* Very light orange/grey border */
+  border-radius: 12px;
+  background-color: #ffffff;
+  gap: 16px;
+
+  &.expired {
+    /* Style for expired card, maybe lighter border or background */
+    background-color: #fafafa;
+  }
+}
+
+.ds-file-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  color: var(--ds-text);
+}
+
+.ds-file-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0; /* allows text truncation */
+
+  .ds-file-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ds-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ds-file-expires {
+    font-size: 12px;
+    color: var(--ds-muted);
+
+    &.is-expired {
+      color: var(--ds-error);
+    }
+  }
+}
+
+.ds-file-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ds-lock-icon {
+  color: var(--ds-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ds-mobile-more-btn {
+  background: transparent;
+  border: 1px solid #f0e6e0;
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ds-bg-to);
+}
+
+.ds-desktop-btn {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  
+  &.ds-delete-btn {
+    background-color: #fffaf7;
+    border: 1px solid #fadbc8;
+    color: var(--ds-bg-to);
+  }
+
+  &.ds-access-btn {
+    background-color: transparent;
+    border: 1px solid var(--ds-bg-to);
+    color: var(--ds-bg-to);
+  }
+}
+
+.ds-desktop-expired-text {
+  display: none;
+  font-size: 12px;
+  color: var(--ds-muted);
+}
+
+/* --------------------------------------------------------------------------
+   MEDIA QUERIES (DESKTOP MODE)
+   -------------------------------------------------------------------------- */
+
+@media (min-width: 768px) {
+  :host {
+    background: transparent;
+  }
+  
+  .ds-dashboard-layout {
+    flex-direction: row;
+    /* On desktop, the layout seems to be inside the normal gradient */
+    background: linear-gradient(180deg, var(--ds-bg-from) 0%, var(--ds-bg-to) 100%);
+  }
+
+  .ds-dashboard-mobile-header,
+  .ds-mobile-overlay,
+  .ds-mobile-more-btn {
+    display: none;
+  }
+
+  .ds-sidebar,
+  .ds-dashboard-topbar {
+    display: flex;
+  }
+
+  .ds-sidebar {
+    /* remove sidebar gradient if we use layout gradient */
+    background: transparent; 
+  }
+
+  .ds-sidebar-header .ds-logo {
+    color: var(--ds-text);
+  }
+
+  /* Make sure main content respects the desktop layout */
+  .ds-dashboard-main {
+    margin: 0;
+    border-radius: 0;
+    overflow: hidden;
+    /* Inner area white */
+    background: #ffffff;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.05);
+  }
+
+  .ds-content-area {
+    padding: 32px;
+    max-width: none;
+  }
+
+  .ds-file-card {
+    padding: 16px 24px;
+  }
+
+  .ds-desktop-btn {
+    display: inline-flex;
+  }
+
+  .ds-desktop-expired-text {
+    display: block;
+    margin-right: 16px;
+  }
+}

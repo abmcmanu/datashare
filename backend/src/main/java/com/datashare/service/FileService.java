@@ -2,6 +2,10 @@ package com.datashare.service;
 
 import com.datashare.domain.FileRecord;
 import com.datashare.domain.User;
+import com.datashare.dto.FileMetadataResponse;
+import com.datashare.exception.FileNotFoundException;
+import com.datashare.exception.FileExpiredException;
+import com.datashare.exception.InvalidFilePasswordException;
 import com.datashare.exception.FileTooLargeException;
 import com.datashare.exception.InvalidCredentialsException;
 import com.datashare.exception.UnsupportedFileTypeException;
@@ -18,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.util.Base64;
@@ -125,6 +130,45 @@ public class FileService {
         log.info("Fichier téléversé : id={}, owner={}, size={}o, token={}",
             saved.getId(), owner.getId(), saved.getSizeBytes(), token);
         return saved;
+    }
+
+    /**
+     * US02 : Récupérer les métadonnées d'un fichier (sans le contenu).
+     * Accessible publiquement via le lien.
+     */
+    @Transactional(readOnly = true)
+    public FileMetadataResponse getFileMetadata(String token) {
+        FileRecord record = fileRepository.findByDownloadToken(token)
+            .orElseThrow(FileNotFoundException::new);
+
+        return FileMetadataResponse.from(record);
+    }
+
+    /**
+     * US02 : Télécharger le binaire du fichier.
+     * Accessible publiquement si token valide + non expiré + mot de passe correct.
+     */
+    @Transactional(readOnly = true)
+    public InputStream downloadFile(String token, String password) {
+        FileRecord record = fileRepository.findByDownloadToken(token)
+            .orElseThrow(FileNotFoundException::new);
+
+        if (record.isExpired()) {
+            throw new FileExpiredException();
+        }
+
+        if (record.isPasswordProtected()) {
+            if (password == null || password.isBlank() || !FILE_PASSWORD_ENCODER.matches(password, record.getPasswordHash())) {
+                throw new InvalidFilePasswordException();
+            }
+        }
+
+        try {
+            return storage.openStream(record.getStorageKey());
+        } catch (IOException e) {
+            log.error("Impossible de lire le fichier {}", record.getStorageKey(), e);
+            throw new IllegalStateException("Erreur de lecture du fichier.");
+        }
     }
 
     // ---------- Helpers ----------

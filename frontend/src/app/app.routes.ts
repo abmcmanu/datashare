@@ -20,5 +20,15 @@ export const APP_ROUTES: Routes = [
     loadComponent: () =>
       import('./features/auth/signup/signup.component').then((m) => m.SignupComponent)
   },
+  {
+    path: 'd',
+    loadComponent: () =>
+      import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent)
+  },
+  {
+    path: 'd/:id',
+    loadComponent: () =>
+      import('./features/download/download.component').then((m) => m.DownloadComponent)
+  },
   { path: '**', redirectTo: '' }
 ];
