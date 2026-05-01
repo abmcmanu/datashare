@@ -64,6 +64,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/signup", "/api/v1/auth/login").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                // US02 — Téléchargement via lien, accessible sans authentification
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/files/*/metadata").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/files/*/download").permitAll()
                 // CORS preflight
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // Tout le reste exige un JWT valide

@@ -5,6 +5,10 @@ import com.datashare.domain.User;
 import com.datashare.exception.FileTooLargeException;
 import com.datashare.exception.InvalidCredentialsException;
 import com.datashare.exception.UnsupportedFileTypeException;
+import com.datashare.exception.FileNotFoundException;
+import com.datashare.exception.FileExpiredException;
+import com.datashare.exception.InvalidFilePasswordException;
+import com.datashare.dto.FileMetadataResponse;
 import com.datashare.repository.FileRepository;
 import com.datashare.repository.UserRepository;
 import com.datashare.security.AuthenticatedUser;
@@ -16,6 +20,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -137,5 +144,42 @@ class FileServiceTest {
 
         long days = java.time.Duration.between(saved.getCreatedAt(), saved.getExpiresAt()).toDays();
         assertThat(days).isBetween(6L, 7L);
+    }
+
+    @Test
+    void getFileMetadata_renvoie_metadata_si_token_valide() {
+        FileRecord record = new FileRecord(owner, "token123", "doc.pdf", "key1", "application/pdf", 100L, null, OffsetDateTime.now().plusDays(1));
+        when(fileRepository.findByDownloadToken("token123")).thenReturn(Optional.of(record));
+
+        FileMetadataResponse response = fileService.getFileMetadata("token123");
+        assertThat(response.originalFilename()).isEqualTo("doc.pdf");
+        assertThat(response.sizeBytes()).isEqualTo(100L);
+        assertThat(response.isPasswordProtected()).isFalse();
+    }
+
+    @Test
+    void getFileMetadata_jette_exception_si_introuvable() {
+        when(fileRepository.findByDownloadToken("invalid")).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> fileService.getFileMetadata("invalid"))
+            .isInstanceOf(FileNotFoundException.class);
+    }
+
+    @Test
+    void downloadFile_jette_exception_si_expire() {
+        FileRecord record = new FileRecord(owner, "token123", "doc.pdf", "key1", "application/pdf", 100L, null, OffsetDateTime.now().minusDays(1));
+        when(fileRepository.findByDownloadToken("token123")).thenReturn(Optional.of(record));
+
+        assertThatThrownBy(() -> fileService.downloadFile("token123", null))
+            .isInstanceOf(FileExpiredException.class);
+    }
+
+    @Test
+    void downloadFile_jette_exception_si_mot_de_passe_invalide() {
+        // "secret" = $2a$10$CxnYh5H5mC5jH7V0K6lH2e/Wn/H7/K6lH2e/Wn/H7/K6lH2e/Wn/H7/ (faux hash pour simplifier, on encode)
+        FileRecord record = new FileRecord(owner, "token123", "doc.pdf", "key1", "application/pdf", 100L, "$2a$10$wJtK/Iof5N1JkG5mFzK1vO9vX5y8b2.c2w6K8uC2/8q8aQ3w3w8.", OffsetDateTime.now().plusDays(1));
+        when(fileRepository.findByDownloadToken("token123")).thenReturn(Optional.of(record));
+
+        assertThatThrownBy(() -> fileService.downloadFile("token123", "wrong"))
+            .isInstanceOf(InvalidFilePasswordException.class);
     }
 }

@@ -8,6 +8,9 @@ import com.datashare.security.AuthenticatedUser;
 import com.datashare.security.JwtAuthenticationFilter;
 import com.datashare.security.JwtService;
 import com.datashare.service.FileService;
+import com.datashare.dto.FileMetadataResponse;
+import com.datashare.exception.FileNotFoundException;
+import com.datashare.exception.FileExpiredException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25,8 +28,14 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import org.springframework.http.MediaType;
+import java.io.ByteArrayInputStream;
 
 @WebMvcTest(FileController.class)
 @Import({SecurityConfig.class, GlobalExceptionHandler.class, JwtAuthenticationFilter.class})
@@ -88,5 +97,47 @@ class FileControllerTest {
                 .file(file)
                 .param("expiresInDays", "8"))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getMetadata_retourne_200() throws Exception {
+        FileMetadataResponse meta = new FileMetadataResponse("doc.pdf", "application/pdf", 100L, OffsetDateTime.now().plusDays(1), false);
+        when(fileService.getFileMetadata("token123")).thenReturn(meta);
+
+        mvc.perform(get("/api/v1/files/token123/metadata"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.originalFilename").value("doc.pdf"));
+    }
+
+    @Test
+    void getMetadata_404_si_introuvable() throws Exception {
+        when(fileService.getFileMetadata("invalid")).thenThrow(new FileNotFoundException());
+
+        mvc.perform(get("/api/v1/files/invalid/metadata"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void download_retourne_fichier() throws Exception {
+        FileMetadataResponse meta = new FileMetadataResponse("doc.pdf", "application/pdf", 10L, OffsetDateTime.now().plusDays(1), false);
+        when(fileService.getFileMetadata("token123")).thenReturn(meta);
+        when(fileService.downloadFile("token123", null)).thenReturn(new ByteArrayInputStream("filecontent".getBytes()));
+
+        mvc.perform(post("/api/v1/files/token123/download")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Content-Disposition", "attachment; filename=\"doc.pdf\""))
+            .andExpect(content().string("filecontent"));
+    }
+
+    @Test
+    void download_410_si_expire() throws Exception {
+        when(fileService.downloadFile(any(), any())).thenThrow(new FileExpiredException());
+
+        mvc.perform(post("/api/v1/files/token123/download")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}"))
+            .andExpect(status().isGone());
     }
 }

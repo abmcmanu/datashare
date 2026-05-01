@@ -1,0 +1,106 @@
+<header class="ds-header">
+  <a routerLink="/" class="ds-logo">DataShare</a>
+
+  @if (auth.isAuthenticated()) {
+    <a routerLink="/dashboard" class="ds-login">Mon espace</a>
+  } @else {
+    <a routerLink="/login" class="ds-login">Se connecter</a>
+  }
+</header>
+
+<main class="ds-main">
+
+  @if (pageState() === 'loading') {
+    <div class="ds-card ds-card--center">
+      <div class="ds-spinner"></div>
+      <p class="ds-muted">Chargement du fichier...</p>
+    </div>
+  }
+
+  @if (pageState() === 'not-found') {
+    <div class="ds-card ds-card--center">
+      <div class="ds-alert ds-alert-error">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        <span>Ce lien est invalide ou n'existe pas.</span>
+      </div>
+    </div>
+  }
+
+  @if (pageState() === 'error') {
+    <div class="ds-card ds-card--center">
+      <div class="ds-alert ds-alert-error">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        <span>Une erreur est survenue. Veuillez réessayer plus tard.</span>
+      </div>
+    </div>
+  }
+
+  @if (pageState() === 'ready' && metadata(); as file) {
+    <div class="ds-card">
+      <h1 class="ds-card-title">Télécharger un fichier</h1>
+
+      <div class="ds-file-details">
+        <div class="ds-file-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/>
+          </svg>
+        </div>
+        <div class="ds-file-text">
+          <div class="ds-file-name" [title]="file.originalFilename">{{ file.originalFilename }}</div>
+          <div class="ds-file-size">{{ fileService.formatSize(file.sizeBytes) }}</div>
+        </div>
+      </div>
+
+      <div class="ds-alert" [class]="'ds-alert-' + alertState">
+        @if (alertState === 'info') {
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        }
+        @if (alertState === 'warning') {
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        }
+        @if (alertState === 'error') {
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        }
+        <span>{{ alertMessage }}</span>
+      </div>
+
+      @if (!isExpired) {
+        @if (file.isPasswordProtected) {
+          <div class="ds-field">
+            <label for="password">Mot de passe</label>
+            <input
+              type="password"
+              id="password"
+              [(ngModel)]="password"
+              placeholder="Saisissez le mot de passe..."
+              [class.ds-input-error]="formError()"
+            />
+          </div>
+        }
+
+        @if (formError()) {
+          <p class="ds-form-error">{{ formError() }}</p>
+        }
+
+        <button
+          class="ds-submit-btn"
+          [class.disabled]="!canDownload"
+          [disabled]="!canDownload"
+          (click)="onDownload()">
+          @if (downloading) {
+            <svg class="ds-spin" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10H20a8 8 0 1 1-8-8V2z"/></svg>
+            Téléchargement...
+          } @else {
+            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7 7-7z"/></svg>
+            Télécharger
+          }
+        </button>
+      }
+    </div>
+  }
+
+</main>
+
+<footer class="ds-footer">
+  <small>Copyright DataShare® 2025</small>
+</footer>

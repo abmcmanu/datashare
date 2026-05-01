@@ -18,6 +18,14 @@ export interface FileUploadResponse {
   expiresAt: string;
 }
 
+export interface FileMetadata {
+  originalFilename: string;
+  mimeType: string;
+  sizeBytes: number;
+  expiresAt: string;
+  isPasswordProtected: boolean;
+}
+
 export type UploadEvent =
   | { kind: 'progress'; loaded: number; total: number; ratio: number }
   | { kind: 'success'; data: FileUploadResponse };
@@ -111,6 +119,20 @@ export class FileService {
       });
       return () => sub.unsubscribe();
     });
+  }
+
+  // ---------- Download (US02) ----------
+
+  getMetadata(token: string): Observable<FileMetadata> {
+    return this.http.get<FileMetadata>(`${this.api}/${token}/metadata`);
+  }
+
+  downloadFile(token: string, password?: string): Observable<Blob> {
+    return this.http.post(
+      `${this.api}/${token}/download`,
+      password ? { password } : {},
+      { responseType: 'blob' }
+    );
   }
 
   // ---------- Helpers ----------
