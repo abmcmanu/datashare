@@ -6,12 +6,12 @@ Ce dossier regroupe les livrables de **l'étape 1 — Conception** du projet Dat
 
 ## Livrables
 
-| # | Livrable | Fichier | Format |
-|---|---|---|---|
-| 1 | Stack technique & justification | [`01-stack-technique.md`](./01-stack-technique.md) | Markdown |
-| 2 | Architecture logicielle (schéma + description) | [`02-architecture.md`](./02-architecture.md) | Markdown + Mermaid |
-| 3 | MCD (Modèle Conceptuel de Données) | [`03-mcd.md`](./03-mcd.md) | Markdown + Mermaid ER + SQL DDL |
-| 4 | Contrat d'interface | [`04-openapi.yaml`](./04-openapi.yaml) | OpenAPI 3.0.3 |
+| # | Livrable | Fichier | Format                          |
+|---|---|---|---------------------------------|
+| 1 | Stack technique & justification | [`01-stack-technique.md`](./01-stack-technique.md) | Markdown                        |
+| 2 | Architecture logicielle (schéma + description) | [`02-architecture.md`](./02-architecture.md) | Markdown + Mermaid              |
+| 3 | MCD (Modèle Conceptuel de Données) | [`03-mcd.md`](./03-mcd.md) | Dbeaver + ERD diagram + SQL DDL |
+| 4 | Contrat d'interface | [`04-openapi.yaml`](./04-openapi.yaml) | OpenAPI 3.0.3                   |
 
 ## Stack retenu (résumé)
 
@@ -22,11 +22,6 @@ Ce dossier regroupe les livrables de **l'étape 1 — Conception** du projet Dat
 - **Authentification** : JWT (HS256), BCrypt 12 rounds
 
 ## Comment visualiser les diagrammes
-
-Les diagrammes sont écrits en **Mermaid**. Ils sont rendus automatiquement par :
-- GitHub / GitLab dans la prévisualisation Markdown,
-- VS Code avec l'extension *Markdown Preview Mermaid Support*,
-- l'éditeur en ligne <https://mermaid.live>.
 
 Le contrat OpenAPI peut être visualisé avec :
 - <https://editor.swagger.io> (copier/coller le YAML),
