@@ -72,6 +72,23 @@
         </div>
       </div>
 
+      @if (allTags().length > 0) {
+        <div class="ds-tag-filter-container">
+          <span class="ds-tag-filter-label">Filtrer par tag :</span>
+          <div class="ds-tag-filters">
+            @for (tag of allTags(); track tag) {
+              <button 
+                class="ds-tag-filter-btn" 
+                [class.active]="selectedTag() === tag"
+                (click)="toggleTagFilter(tag)"
+              >
+                {{ tag }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
       @if (error()) {
         <div class="ds-list-error">{{ error() }}</div>
       }
@@ -109,6 +126,25 @@
                   <span [class.is-expired]="file.expired">{{ formatExpiresLabel(file) }}</span>
                 </span>
               </div>
+
+              @if (!file.expired) {
+                <div class="ds-file-tags">
+                  @for (tag of file.tags; track tag) {
+                    <span class="ds-tag">
+                      {{ tag }}
+                      <button class="ds-tag-remove" (click)="removeTag(file, tag)" aria-label="Retirer le tag">×</button>
+                    </span>
+                  }
+                  <input
+                    class="ds-tag-input"
+                    type="text"
+                    placeholder="+ tag"
+                    maxlength="30"
+                    [(ngModel)]="tagInputs[file.id]"
+                    (keydown)="onTagKeydown($event, file)"
+                  />
+                </div>
+              }
 
               <div class="ds-file-actions">
                 @if (file.expired) {

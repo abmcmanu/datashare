@@ -36,6 +36,7 @@ export interface UserFileItem {
   createdAt: string;
   expiresAt: string;
   expired: boolean;
+  tags: string[];
 }
 
 export type UploadEvent =
@@ -155,6 +156,16 @@ export class FileService {
 
   deleteFile(id: string): Observable<void> {
     return this.http.delete<void>(`${this.api}/${id}`);
+  }
+
+  // ---------- Tags (US08) ----------
+
+  addTag(fileId: string, label: string): Observable<string[]> {
+    return this.http.post<string[]>(`${this.api}/${fileId}/tags`, { label });
+  }
+
+  removeTag(fileId: string, label: string): Observable<string[]> {
+    return this.http.delete<string[]>(`${this.api}/${fileId}/tags/${encodeURIComponent(label)}`);
   }
 
   // ---------- Helpers ----------

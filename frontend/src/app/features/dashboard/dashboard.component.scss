@@ -269,6 +269,47 @@
   }
 }
 
+.ds-tag-filter-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+
+  .ds-tag-filter-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+  }
+
+  .ds-tag-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ds-tag-filter-btn {
+    background: #f0f0f0;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background: #e5e7eb;
+    }
+
+    &.active {
+      background: var(--ds-accent);
+      color: white;
+    }
+  }
+}
+
 .ds-file-list {
   display: flex;
   flex-direction: column;
@@ -278,15 +319,21 @@
 .ds-file-card {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   padding: 16px;
-  border: 1px solid #f0e6e0; /* Very light orange/grey border */
+  border: 1px solid #f0e6e0;
   border-radius: 12px;
   background-color: #ffffff;
-  gap: 16px;
+  gap: 12px 16px;
 
   &.expired {
-    /* Style for expired card, maybe lighter border or background */
     background-color: #fafafa;
+  }
+
+  .ds-file-tags {
+    flex-basis: 100%;
+    padding-left: 56px;
+    margin-top: -4px;
   }
 }
 
@@ -495,6 +542,67 @@
   font-size: 12px;
   color: #6b7280;
   margin-top: 2px;
+}
+
+/* ---------- Tags (US08) ---------- */
+
+.ds-file-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0 2px;
+}
+
+.ds-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f0f0f0;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.ds-tag-remove {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 1px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #c5221f;
+  }
+}
+
+.ds-tag-input {
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-family: var(--ds-font-main);
+  color: var(--ds-text);
+  background: transparent;
+  width: 72px;
+  outline: none;
+  transition: border-color 0.15s ease, width 0.15s ease;
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+
+  &:focus {
+    border-color: var(--ds-accent);
+    width: 120px;
+  }
 }
 
 /* ---------- Access Button ---------- */

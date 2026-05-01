@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -10,7 +11,7 @@ import { UserAvatarComponent } from '../../shared/user-avatar/user-avatar.compon
 @Component({
   selector: 'ds-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, UserAvatarComponent],
+  imports: [CommonModule, FormsModule, RouterLink, UserAvatarComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -21,18 +22,30 @@ export class DashboardComponent implements OnInit {
 
   protected mobileMenuOpen = false;
   protected currentTab = signal<'tous' | 'actifs' | 'expire'>('actifs');
+  protected selectedTag = signal<string | null>(null);
   protected loading = signal(true);
   protected error = signal<string | null>(null);
   protected files = signal<UserFileItem[]>([]);
   protected fileToDelete = signal<UserFileItem | null>(null);
   protected deleting = signal(false);
   protected mobileActionsFile = signal<UserFileItem | null>(null);
+  protected tagInputs: Record<string, string> = {};
+
+  protected allTags = computed(() => {
+    const tags = new Set<string>();
+    for (const f of this.files()) {
+      for (const t of f.tags) tags.add(t);
+    }
+    return [...tags].sort();
+  });
 
   protected filteredFiles = computed(() => {
     const tab = this.currentTab();
+    const tag = this.selectedTag();
     return this.files().filter(f => {
-      if (tab === 'actifs') return !f.expired;
-      if (tab === 'expire') return f.expired;
+      if (tab === 'actifs' && f.expired) return false;
+      if (tab === 'expire' && !f.expired) return false;
+      if (tag && !f.tags.includes(tag)) return false;
       return true;
     });
   });
@@ -118,7 +131,43 @@ export class DashboardComponent implements OnInit {
     this.currentTab.set(tab);
   }
 
+  protected toggleTagFilter(tag: string): void {
+    this.selectedTag.set(this.selectedTag() === tag ? null : tag);
+  }
+
   protected getUserName(): string {
     return this.auth.currentUser()?.email?.split('@')[0] ?? 'Utilisateur';
+  }
+
+  protected addTag(file: UserFileItem): void {
+    const label = (this.tagInputs[file.id] || '').trim();
+    if (!label || label.length > 30) return;
+    if (file.tags.includes(label.toLowerCase())) return;
+
+    this.fileService.addTag(file.id, label).subscribe({
+      next: (tags) => {
+        this.updateFileTags(file.id, tags);
+        this.tagInputs[file.id] = '';
+      }
+    });
+  }
+
+  protected removeTag(file: UserFileItem, label: string): void {
+    this.fileService.removeTag(file.id, label).subscribe({
+      next: (tags) => this.updateFileTags(file.id, tags)
+    });
+  }
+
+  protected onTagKeydown(event: KeyboardEvent, file: UserFileItem): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.addTag(file);
+    }
+  }
+
+  private updateFileTags(fileId: string, tags: string[]): void {
+    this.files.update(list =>
+      list.map(f => f.id === fileId ? { ...f, tags } : f)
+    );
   }
 }
