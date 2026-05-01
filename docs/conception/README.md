@@ -6,12 +6,12 @@ Ce dossier regroupe les livrables de **l'étape 1 — Conception** du projet Dat
 
 ## Livrables
 
-| # | Livrable | Fichier | Format                          |
-|---|---|---|---------------------------------|
-| 1 | Stack technique & justification | [`01-stack-technique.md`](./01-stack-technique.md) | Markdown                        |
-| 2 | Architecture logicielle (schéma + description) | [`02-architecture.md`](./02-architecture.md) | Markdown + Mermaid              |
-| 3 | MCD (Modèle Conceptuel de Données) | [`03-mcd.md`](./03-mcd.md) | Dbeaver + ERD diagram + SQL DDL |
-| 4 | Contrat d'interface | [`04-openapi.yaml`](./04-openapi.yaml) | OpenAPI 3.0.3                   |
+| # | Livrable | Fichier | Format                             |
+|---|---|---|------------------------------------|
+| 1 | Stack technique & justification | [`01-stack-technique.md`](./01-stack-technique.md) | Markdown                           |
+| 2 | Architecture logicielle (schéma + description) | [`02-architecture.md`](./02-architecture.md) | Markdown + excalidraw              |
+| 3 | MCD (Modèle Conceptuel de Données) | [`03-mcd.md`](./03-mcd.md) | Dbeaver + ERD diagram + SQL DDL + excalidraw |
+| 4 | Contrat d'interface | [`04-openapi.yaml`](./04-openapi.yaml) | OpenAPI 3.0.3                      |
 
 ## Stack retenu (résumé)
 
