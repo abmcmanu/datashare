@@ -207,6 +207,26 @@ public class FileService {
     }
 
     @Transactional
+    public void purgeExpiredFiles() {
+        OffsetDateTime now = OffsetDateTime.now();
+        List<FileRecord> expired = fileRepository.findByExpiresAtBefore(now);
+        
+        if (expired.isEmpty()) return;
+
+        log.info("Purge automatique : {} fichiers expirés trouvés", expired.size());
+        
+        for (FileRecord record : expired) {
+            try {
+                storage.delete(record.getStorageKey());
+            } catch (IOException e) {
+                log.warn("Impossible de supprimer le fichier physique {}", record.getStorageKey(), e);
+            }
+            fileRepository.delete(record);
+            log.info("Fichier expiré purgé : id={}", record.getId());
+        }
+    }
+
+    @Transactional
     public List<String> addTag(UUID fileId, String label, AuthenticatedUser principal) {
         FileRecord record = fileRepository.findById(fileId)
             .orElseThrow(FileNotFoundException::new);
