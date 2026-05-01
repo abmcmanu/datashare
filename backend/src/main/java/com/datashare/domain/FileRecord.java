@@ -5,12 +5,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -63,6 +67,14 @@ public class FileRecord {
     @Column(name = "expires_at", nullable = false)
     private OffsetDateTime expiresAt;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "file_tags",
+        joinColumns = @JoinColumn(name = "file_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
+
     protected FileRecord() {}
 
     public FileRecord(User owner,
@@ -110,6 +122,10 @@ public class FileRecord {
     public String getPasswordHash() { return passwordHash; }
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public OffsetDateTime getExpiresAt() { return expiresAt; }
+    public Set<Tag> getTags() { return tags; }
+
+    public void addTag(Tag tag) { tags.add(tag); }
+    public void removeTag(Tag tag) { tags.remove(tag); }
 
     @Override
     public boolean equals(Object o) {

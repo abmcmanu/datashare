@@ -1,8 +1,10 @@
 package com.datashare.dto;
 
 import com.datashare.domain.FileRecord;
+import com.datashare.domain.Tag;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public record FileListItem(
@@ -14,7 +16,8 @@ public record FileListItem(
     boolean passwordRequired,
     OffsetDateTime createdAt,
     OffsetDateTime expiresAt,
-    boolean expired
+    boolean expired,
+    List<String> tags
 ) {
     public static FileListItem from(FileRecord file) {
         return new FileListItem(
@@ -26,7 +29,8 @@ public record FileListItem(
             file.isPasswordProtected(),
             file.getCreatedAt(),
             file.getExpiresAt(),
-            file.isExpired()
+            file.isExpired(),
+            file.getTags().stream().map(Tag::getLabel).sorted().toList()
         );
     }
 }

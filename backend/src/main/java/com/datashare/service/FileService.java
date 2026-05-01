@@ -1,6 +1,7 @@
 package com.datashare.service;
 
 import com.datashare.domain.FileRecord;
+import com.datashare.domain.Tag;
 import com.datashare.domain.User;
 import com.datashare.dto.FileMetadataResponse;
 import com.datashare.dto.FileListItem;
@@ -11,6 +12,7 @@ import com.datashare.exception.FileTooLargeException;
 import com.datashare.exception.InvalidCredentialsException;
 import com.datashare.exception.UnsupportedFileTypeException;
 import com.datashare.repository.FileRepository;
+import com.datashare.repository.TagRepository;
 import com.datashare.repository.UserRepository;
 import com.datashare.security.AuthenticatedUser;
 import com.datashare.storage.StorageService;
@@ -51,6 +53,7 @@ public class FileService {
     private static final BCryptPasswordEncoder FILE_PASSWORD_ENCODER = new BCryptPasswordEncoder(10);
 
     private final FileRepository fileRepository;
+    private final TagRepository tagRepository;
     private final UserRepository userRepository;
     private final StorageService storage;
 
@@ -62,6 +65,7 @@ public class FileService {
 
     public FileService(
         FileRepository fileRepository,
+        TagRepository tagRepository,
         UserRepository userRepository,
         StorageService storage,
         @Value("${datashare.upload.max-bytes}") long maxBytes,
@@ -71,6 +75,7 @@ public class FileService {
         @Value("${datashare.expiration.max-days}") int maxExpirationDays
     ) {
         this.fileRepository = fileRepository;
+        this.tagRepository = tagRepository;
         this.userRepository = userRepository;
         this.storage = storage;
         this.maxBytes = maxBytes;
@@ -199,6 +204,44 @@ public class FileService {
 
         fileRepository.delete(record);
         log.info("Fichier supprimé : id={}, owner={}", fileId, principal.id());
+    }
+
+    @Transactional
+    public List<String> addTag(UUID fileId, String label, AuthenticatedUser principal) {
+        FileRecord record = fileRepository.findById(fileId)
+            .orElseThrow(FileNotFoundException::new);
+
+        if (record.getOwner() == null || !record.getOwner().getId().equals(principal.id())) {
+            throw new org.springframework.security.access.AccessDeniedException("Accès refusé.");
+        }
+
+        String normalized = label.trim().toLowerCase();
+        User owner = record.getOwner();
+
+        Tag tag = tagRepository.findByOwnerAndLabel(owner, normalized)
+            .orElseGet(() -> tagRepository.save(new Tag(owner, normalized)));
+
+        record.addTag(tag);
+        fileRepository.save(record);
+
+        return record.getTags().stream().map(Tag::getLabel).sorted().toList();
+    }
+
+    @Transactional
+    public List<String> removeTag(UUID fileId, String label, AuthenticatedUser principal) {
+        FileRecord record = fileRepository.findById(fileId)
+            .orElseThrow(FileNotFoundException::new);
+
+        if (record.getOwner() == null || !record.getOwner().getId().equals(principal.id())) {
+            throw new org.springframework.security.access.AccessDeniedException("Accès refusé.");
+        }
+
+        String normalized = label.trim().toLowerCase();
+
+        record.getTags().removeIf(t -> t.getLabel().equals(normalized));
+        fileRepository.save(record);
+
+        return record.getTags().stream().map(Tag::getLabel).sorted().toList();
     }
 
     // ---------- Helpers ----------

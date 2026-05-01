@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -126,6 +127,36 @@ public class FileController {
     ) {
         fileService.deleteFile(id, principal);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/tags")
+    @Operation(
+        summary = "Ajouter un tag (US08)",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    public ResponseEntity<List<String>> addTag(
+        @PathVariable UUID id,
+        @RequestBody Map<String, String> body,
+        @AuthenticationPrincipal AuthenticatedUser principal
+    ) {
+        String label = body.getOrDefault("label", "").trim();
+        if (label.isEmpty() || label.length() > 30) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(fileService.addTag(id, label, principal));
+    }
+
+    @DeleteMapping("/{id}/tags/{label}")
+    @Operation(
+        summary = "Retirer un tag (US08)",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    public ResponseEntity<List<String>> removeTag(
+        @PathVariable UUID id,
+        @PathVariable String label,
+        @AuthenticationPrincipal AuthenticatedUser principal
+    ) {
+        return ResponseEntity.ok(fileService.removeTag(id, label, principal));
     }
 
     private String publicBaseUrl(HttpServletRequest req) {
