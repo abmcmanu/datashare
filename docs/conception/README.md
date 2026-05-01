@@ -23,11 +23,6 @@ Ce dossier regroupe les livrables de **l'étape 1 — Conception** du projet Dat
 
 ## Comment visualiser les diagrammes
 
-Les diagrammes sont écrits en **Mermaid**. Ils sont rendus automatiquement par :
-- GitHub / GitLab dans la prévisualisation Markdown,
-- VS Code avec l'extension *Markdown Preview Mermaid Support*,
-- l'éditeur en ligne <https://mermaid.live>.
-
 Le contrat OpenAPI peut être visualisé avec :
 - <https://editor.swagger.io> (copier/coller le YAML),
 - VS Code + extension *Swagger Viewer*,
