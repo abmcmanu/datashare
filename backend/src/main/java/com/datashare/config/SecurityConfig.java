@@ -67,6 +67,8 @@ public class SecurityConfig {
                 // US02 — Téléchargement via lien, accessible sans authentification
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/files/*/metadata").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/files/*/download").permitAll()
+                // US07 - Upload anonyme, accessible sans authentification
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/files").permitAll()
                 // CORS preflight
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // Tout le reste exige un JWT valide

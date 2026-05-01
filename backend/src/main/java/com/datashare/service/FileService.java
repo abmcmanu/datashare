@@ -92,15 +92,13 @@ public class FileService {
                              String password,
                              AuthenticatedUser principal) {
 
-        if (principal == null) {
-            throw new InvalidCredentialsException();
-        }
-
         validate(multipart);
 
-        // Charger l'utilisateur (LAZY mais nécessaire pour la FK)
-        User owner = userRepository.findById(principal.id())
-            .orElseThrow(InvalidCredentialsException::new);
+        User owner = null;
+        if (principal != null) {
+            owner = userRepository.findById(principal.id())
+                .orElseThrow(InvalidCredentialsException::new);
+        }
 
         int days = clampExpirationDays(expiresInDays);
         OffsetDateTime now = OffsetDateTime.now();
@@ -131,7 +129,7 @@ public class FileService {
 
         FileRecord saved = fileRepository.save(file);
         log.info("Fichier téléversé : id={}, owner={}, size={}o, token={}",
-            saved.getId(), owner.getId(), saved.getSizeBytes(), token);
+            saved.getId(), owner != null ? owner.getId() : "anonyme", saved.getSizeBytes(), token);
         return saved;
     }
 
