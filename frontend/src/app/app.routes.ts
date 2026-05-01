@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 /**
- * Routage de l'application — chargement paresseux des pages.
+ * Routage de l'application — lazy loading des pages.
  */
 export const APP_ROUTES: Routes = [
   {
