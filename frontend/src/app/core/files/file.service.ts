@@ -26,6 +26,18 @@ export interface FileMetadata {
   isPasswordProtected: boolean;
 }
 
+export interface UserFileItem {
+  id: string;
+  token: string;
+  originalFilename: string;
+  mimeType: string;
+  sizeBytes: number;
+  passwordRequired: boolean;
+  createdAt: string;
+  expiresAt: string;
+  expired: boolean;
+}
+
 export type UploadEvent =
   | { kind: 'progress'; loaded: number; total: number; ratio: number }
   | { kind: 'success'; data: FileUploadResponse };
@@ -135,16 +147,24 @@ export class FileService {
     );
   }
 
+  // ---------- History (US05) ----------
+
+  listFiles(): Observable<UserFileItem[]> {
+    return this.http.get<UserFileItem[]>(this.api);
+  }
+
+  deleteFile(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.api}/${id}`);
+  }
+
   // ---------- Helpers ----------
 
-  /** Renvoie l'extension en minuscule sans le point, ou null. */
   extensionOf(name: string): string | null {
     const idx = name.lastIndexOf('.');
     if (idx <= 0 || idx === name.length - 1) return null;
     return name.slice(idx + 1).toLowerCase();
   }
 
-  /** Format lisible : 2.6 Mo, 1.1 Go, 832 Ko, etc. */
   formatSize(bytes: number): string {
     if (bytes < 1024) return `${bytes} o`;
     const units = ['Ko', 'Mo', 'Go', 'To'];

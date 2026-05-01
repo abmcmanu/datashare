@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 /**
- * Routage de l'application — chargement paresseux des pages.
+ * Routage de l'application — lazy loading des pages.
  */
 export const APP_ROUTES: Routes = [
   {
@@ -21,7 +21,7 @@ export const APP_ROUTES: Routes = [
       import('./features/auth/signup/signup.component').then((m) => m.SignupComponent)
   },
   {
-    path: 'd',
+    path: 'dashboard',
     loadComponent: () =>
       import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent)
   },

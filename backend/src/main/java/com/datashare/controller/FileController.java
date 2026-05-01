@@ -3,6 +3,7 @@ package com.datashare.controller;
 import com.datashare.domain.FileRecord;
 import com.datashare.dto.FileUploadResponse;
 import com.datashare.dto.FileMetadataResponse;
+import com.datashare.dto.FileListItem;
 import com.datashare.dto.DownloadRequest;
 import com.datashare.security.AuthenticatedUser;
 import com.datashare.service.FileService;
@@ -23,14 +24,18 @@ import org.springframework.core.io.Resource;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Endpoints liés aux fichiers (US01 ici, US02/US05/US06 ensuite).
@@ -98,11 +103,34 @@ public class FileController {
             .body(resource);
     }
 
-    /** Construit l'URL publique du front pour la concaténer avec /d/{token}. */
+    @GetMapping
+    @Operation(
+        summary = "Lister les fichiers de l'utilisateur connecté (US05)",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    public ResponseEntity<List<FileListItem>> listFiles(
+        @AuthenticationPrincipal AuthenticatedUser principal
+    ) {
+        return ResponseEntity.ok(fileService.listFiles(principal));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(
+        summary = "Supprimer un fichier (US05)",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    public ResponseEntity<Void> deleteFile(
+        @PathVariable UUID id,
+        @AuthenticationPrincipal AuthenticatedUser principal
+    ) {
+        fileService.deleteFile(id, principal);
+        return ResponseEntity.noContent().build();
+    }
+
     private String publicBaseUrl(HttpServletRequest req) {
         String origin = req.getHeader("Origin");
         if (origin != null && !origin.isBlank()) return origin;
-        // Fallback : reconstruction depuis le scheme/host/port de la requête
         String scheme = req.getScheme();
         String host = req.getServerName();
         int port = req.getServerPort();

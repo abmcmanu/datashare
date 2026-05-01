@@ -3,6 +3,7 @@ package com.datashare.service;
 import com.datashare.domain.FileRecord;
 import com.datashare.domain.User;
 import com.datashare.dto.FileMetadataResponse;
+import com.datashare.dto.FileListItem;
 import com.datashare.exception.FileNotFoundException;
 import com.datashare.exception.FileExpiredException;
 import com.datashare.exception.InvalidFilePasswordException;
@@ -26,7 +27,9 @@ import java.io.InputStream;
 import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.util.Base64;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Logique métier de l'upload de fichiers (US01).
@@ -169,6 +172,35 @@ public class FileService {
             log.error("Impossible de lire le fichier {}", record.getStorageKey(), e);
             throw new IllegalStateException("Erreur de lecture du fichier.");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<FileListItem> listFiles(AuthenticatedUser principal) {
+        User owner = userRepository.findById(principal.id())
+            .orElseThrow(InvalidCredentialsException::new);
+        return fileRepository.findByOwnerOrderByCreatedAtDesc(owner)
+            .stream()
+            .map(FileListItem::from)
+            .toList();
+    }
+
+    @Transactional
+    public void deleteFile(UUID fileId, AuthenticatedUser principal) {
+        FileRecord record = fileRepository.findById(fileId)
+            .orElseThrow(FileNotFoundException::new);
+
+        if (!record.getOwner().getId().equals(principal.id())) {
+            throw new org.springframework.security.access.AccessDeniedException("Accès refusé.");
+        }
+
+        try {
+            storage.delete(record.getStorageKey());
+        } catch (IOException e) {
+            log.warn("Impossible de supprimer le fichier physique {}", record.getStorageKey(), e);
+        }
+
+        fileRepository.delete(record);
+        log.info("Fichier supprimé : id={}, owner={}", fileId, principal.id());
     }
 
     // ---------- Helpers ----------
