@@ -128,7 +128,7 @@
                 </div>
 
                 @if (!file.expired) {
-                  <button class="ds-mobile-more-btn" aria-label="Plus d'options">
+                  <button class="ds-mobile-more-btn" (click)="toggleMobileActions(file)" aria-label="Plus d'options">
                     <svg viewBox="0 0 24 24" width="20" height="20">
                       <path fill="currentColor" d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
                     </svg>
@@ -156,6 +156,32 @@
     </div>
   </main>
 </div>
+
+@if (mobileActionsFile(); as file) {
+  <div class="ds-action-sheet-overlay" (click)="toggleMobileActions(null)">
+    <div class="ds-action-sheet" (click)="$event.stopPropagation()">
+      <div class="ds-action-sheet-header">
+        <span class="ds-action-sheet-title">{{ file.originalFilename }}</span>
+        <span class="ds-action-sheet-sub">{{ fileService.formatSize(file.sizeBytes) }}</span>
+      </div>
+      <a class="ds-action-sheet-item" [routerLink]="['/d', file.token]" (click)="toggleMobileActions(null)">
+        <svg viewBox="0 0 24 24" width="20" height="20">
+          <path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+        </svg>
+        Accéder au fichier
+      </a>
+      <button class="ds-action-sheet-item ds-action-sheet-danger" (click)="mobileAskDelete(file)">
+        <svg viewBox="0 0 24 24" width="20" height="20">
+          <path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+        </svg>
+        Supprimer
+      </button>
+      <button class="ds-action-sheet-item ds-action-sheet-cancel" (click)="toggleMobileActions(null)">
+        Annuler
+      </button>
+    </div>
+  </div>
+}
 
 @if (fileToDelete(); as file) {
   <div class="ds-modal-overlay">

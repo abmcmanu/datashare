@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
   protected files = signal<UserFileItem[]>([]);
   protected fileToDelete = signal<UserFileItem | null>(null);
   protected deleting = signal(false);
+  protected mobileActionsFile = signal<UserFileItem | null>(null);
 
   protected filteredFiles = computed(() => {
     const tab = this.currentTab();
@@ -85,6 +86,15 @@ export class DashboardComponent implements OnInit {
 
   protected cancelDelete(): void {
     this.fileToDelete.set(null);
+  }
+
+  protected toggleMobileActions(file: UserFileItem | null): void {
+    this.mobileActionsFile.set(file);
+  }
+
+  protected mobileAskDelete(file: UserFileItem): void {
+    this.mobileActionsFile.set(null);
+    this.fileToDelete.set(file);
   }
 
   protected formatExpiresLabel(file: UserFileItem): string {
