@@ -1,0 +1,276 @@
+/* =====================================================================
+   UploadDialog — pixel-perfect maquette « Ajouter un fichier »
+   ===================================================================== */
+
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  font-family: var(--ds-font-main);
+}
+
+/* ---- Overlay ---- */
+.ds-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(2px);
+  animation: fade-in .15s ease;
+}
+
+/* ---- Carte ---- */
+.ds-dialog {
+  position: relative;
+  background: var(--ds-card);
+  border-radius: var(--ds-radius-card);
+  width: 100%;
+  max-width: 460px;
+  padding: 32px 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    0 18px 40px rgba(0, 0, 0, 0.18);
+  animation: slide-up .2s ease;
+}
+
+.ds-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: -0.01em;
+  color: var(--ds-text);
+}
+
+/* ---- Input file caché ---- */
+.ds-file-input {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+}
+
+/* ---- Drop zone (état empty) ---- */
+.ds-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px 16px;
+  border: 1.5px dashed var(--ds-orange-border);
+  border-radius: var(--ds-radius-card);
+  background: rgba(253, 232, 217, 0.4);
+  color: var(--ds-orange-strong);
+  font-family: var(--ds-font-main);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+
+  &:hover {
+    background: rgba(253, 232, 217, 0.7);
+    border-color: var(--ds-orange);
+  }
+}
+
+/* ---- Ligne fichier (icône + nom + taille + bouton Changer) ---- */
+.ds-file-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ds-file-icon {
+  flex-shrink: 0;
+  color: var(--ds-text);
+  &-image { color: #5e4d3a; }
+  &-audio { color: #6b3a8c; }
+  &-video { color: #9c2f37; }
+  &-doc   { color: #3b6cb6; }
+}
+
+.ds-file-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ds-file-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ds-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-file-meta {
+  font-size: 12px;
+  color: var(--ds-muted);
+}
+
+.ds-change {
+  flex-shrink: 0;
+  background: transparent;
+  color: var(--ds-orange);
+  border: 1px solid var(--ds-orange-border);
+  border-radius: var(--ds-radius-button);
+  padding: 6px 14px;
+  font-family: var(--ds-font-main);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover { background: var(--ds-orange-soft); }
+}
+
+/* ---- Champs de formulaire ---- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ds-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  > span {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ds-text);
+  }
+
+  > input,
+  > select {
+    font: inherit;
+    font-size: 14px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-input);
+    padding: 12px 14px;
+    background: #FFFFFF;
+    color: var(--ds-text);
+
+    &::placeholder {
+      color: var(--ds-placeholder);
+      opacity: 1;
+    }
+
+    &:focus {
+      border-color: var(--ds-orange);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(226, 127, 41, 0.16);
+    }
+  }
+
+  > select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23888'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 18px;
+    padding-right: 38px;
+  }
+}
+
+.ds-field-error {
+  color: var(--ds-error);
+  font-size: 12px;
+}
+
+.ds-form-error {
+  margin: 0;
+  background: #FDE2E0;
+  color: var(--ds-error);
+  border-radius: var(--ds-radius-input);
+  padding: 10px 14px;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ---- Bouton submit ---- */
+.ds-submit {
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--ds-orange-soft);
+  color: var(--ds-orange);
+  border: 1px solid var(--ds-orange-border);
+  border-radius: var(--ds-radius-button);
+  padding: 14px 20px;
+  font-family: var(--ds-font-main);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter .15s ease;
+
+  &:hover:not([disabled]) { filter: brightness(0.97); }
+  &:disabled              { opacity: 0.5; cursor: not-allowed; }
+}
+
+/* ---- Progression ---- */
+.ds-progress {
+  background: var(--ds-orange-soft);
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.ds-progress-bar {
+  background: var(--ds-orange);
+  height: 100%;
+  transition: width .15s ease;
+}
+
+.ds-progress-label {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ds-muted);
+}
+
+/* ---- Succès : message + lien ---- */
+.ds-success-msg {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--ds-text);
+  line-height: 1.4;
+}
+
+.ds-link-box {
+  display: block;
+  background: var(--ds-orange-soft);
+  border-radius: var(--ds-radius-input);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--ds-orange-strong);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.ds-copy {
+  margin-top: 0;
+}
+
+/* ---- Animations ---- */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

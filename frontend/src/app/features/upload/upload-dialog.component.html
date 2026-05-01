@@ -1,0 +1,151 @@
+<!-- Overlay sombre semi-transparent -->
+<div class="ds-overlay" (click)="close()" aria-hidden="true"></div>
+
+<div class="ds-dialog"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="ds-upload-title"
+     (click)="$event.stopPropagation()">
+
+  <h2 id="ds-upload-title" class="ds-title">Ajouter un fichier</h2>
+
+  <input #fileInput
+         type="file"
+         class="ds-file-input"
+         (change)="onFileChosen($event)"
+         aria-hidden="true">
+
+  <!-- =================== ÉTAT 1 : EMPTY (drag & drop initial) =================== -->
+  @if (state().kind === 'empty') {
+    <button type="button" class="ds-dropzone" (click)="openPicker()">
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path fill="currentColor"
+              d="M19.35 10.04A7.49 7.49 0 0 0 12 4a7.5 7.5 0 0 0-6.93 4.66A6 6 0 0 0 6 20h13a5 5 0 0 0 .35-9.96Zm-7.35-.04 4 4h-3v4h-2v-4H8l4-4Z"/>
+      </svg>
+      <span>Cliquer pour choisir un fichier&nbsp;ou le déposer ici</span>
+    </button>
+  }
+
+  <!-- =================== ÉTAT 2 : SELECTING (formulaire) =================== -->
+  @if (sel(); as s) {
+    <div class="ds-file-row">
+      <ng-container *ngTemplateOutlet="fileIcon; context: { kind: fileIconClass(s.file.name) }"></ng-container>
+      <div class="ds-file-info">
+        <span class="ds-file-name">{{ s.file.name }}</span>
+        <span class="ds-file-meta">{{ formatSize(s.file.size) }}</span>
+      </div>
+      <button type="button" class="ds-change" (click)="openPicker()">Changer</button>
+    </div>
+
+    @if (s.clientError) {
+      <p class="ds-field-error" role="alert">{{ s.clientError.message }}</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label class="ds-field">
+        <span>Mot de passe</span>
+        <input type="password"
+               formControlName="password"
+               autocomplete="new-password"
+               placeholder="Optionnel">
+        @if (form.controls.password.touched && form.controls.password.errors?.['minlength']) {
+          <small class="ds-field-error">Au moins 6 caractères.</small>
+        }
+      </label>
+
+      <label class="ds-field">
+        <span>Expiration</span>
+        <select formControlName="expiresInDays">
+          @for (opt of expirationOptions; track opt.days) {
+            <option [value]="opt.days">{{ opt.label }}</option>
+          }
+        </select>
+      </label>
+
+      <button type="submit"
+              class="ds-submit"
+              [disabled]="!canSubmit()">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path fill="currentColor"
+                d="M19.35 10.04A7.49 7.49 0 0 0 12 4a7.5 7.5 0 0 0-6.93 4.66A6 6 0 0 0 6 20h13a5 5 0 0 0 .35-9.96Zm-7.35-.04 4 4h-3v4h-2v-4H8l4-4Z"/>
+        </svg>
+        Téléverser
+      </button>
+    </form>
+  }
+
+  <!-- =================== ÉTAT 3 : UPLOADING =================== -->
+  @if (up(); as s) {
+    <div class="ds-file-row">
+      <ng-container *ngTemplateOutlet="fileIcon; context: { kind: fileIconClass(s.file.name) }"></ng-container>
+      <div class="ds-file-info">
+        <span class="ds-file-name">{{ s.file.name }}</span>
+        <span class="ds-file-meta">{{ formatSize(s.file.size) }}</span>
+      </div>
+    </div>
+    <div class="ds-progress" role="progressbar"
+         [attr.aria-valuenow]="s.ratio * 100 | number:'1.0-0'"
+         aria-valuemin="0" aria-valuemax="100">
+      <div class="ds-progress-bar" [style.width.%]="s.ratio * 100"></div>
+    </div>
+    <p class="ds-progress-label">
+      Téléversement&nbsp;: {{ s.ratio * 100 | number:'1.0-0' }}&nbsp;%
+    </p>
+  }
+
+  <!-- =================== ÉTAT 4 : SUCCESS =================== -->
+  @if (ok(); as s) {
+    <div class="ds-file-row">
+      <ng-container *ngTemplateOutlet="fileIcon; context: { kind: fileIconClass(s.file.name) }"></ng-container>
+      <div class="ds-file-info">
+        <span class="ds-file-name">{{ s.response.originalFilename }}</span>
+        <span class="ds-file-meta">{{ formatSize(s.response.sizeBytes) }}</span>
+      </div>
+    </div>
+
+    <p class="ds-success-msg">
+      Félicitations, ton fichier sera conservé chez nous pendant
+      {{ form.controls.expiresInDays.value === 7 ? 'une semaine' : (form.controls.expiresInDays.value + ' jour' + (form.controls.expiresInDays.value > 1 ? 's' : '')) }}&nbsp;!
+    </p>
+
+    <a class="ds-link-box"
+       [href]="s.response.downloadUrl"
+       target="_blank"
+       rel="noopener noreferrer">
+      {{ s.response.downloadUrl }}
+    </a>
+
+    <button type="button" class="ds-submit ds-copy" (click)="copyLink()">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path fill="currentColor"
+              d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h11v14Z"/>
+      </svg>
+      {{ copySuccess() ? 'Copié !' : 'Copier le lien' }}
+    </button>
+  }
+
+  <!-- =================== ÉTAT 5 : ERROR =================== -->
+  @if (err(); as s) {
+    <p class="ds-form-error" role="alert">{{ s.message }}</p>
+    <button type="button" class="ds-submit" (click)="reset()">Recommencer</button>
+  }
+</div>
+
+<!-- Icône fichier (template réutilisable) -->
+<ng-template #fileIcon let-kind="kind">
+  <svg class="ds-file-icon ds-file-icon-{{ kind }}" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+    @if (kind === 'image') {
+      <path fill="currentColor"
+            d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2Zm-12-5 2.5 3.01L15 13l4 5H5l4-4Z"/>
+    } @else if (kind === 'audio') {
+      <path fill="currentColor"
+            d="M12 3v9.55A4 4 0 1 0 14 16V7h4V3h-6Z"/>
+    } @else if (kind === 'video') {
+      <path fill="currentColor"
+            d="M4 6.47v11.06A1.5 1.5 0 0 0 6.21 18.8l9.5-5.53a1.5 1.5 0 0 0 0-2.6l-9.5-5.53A1.5 1.5 0 0 0 4 6.47Z"/>
+    } @else {
+      <path fill="currentColor"
+            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm-1 7V3.5L18.5 9H13Z"/>
+    }
+  </svg>
+</ng-template>
