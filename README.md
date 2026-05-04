@@ -89,12 +89,16 @@ Une vérification est en place via [`commitlint`](./commitlint.config.js).
 
 ## Documentation
 
-| Document | Lien |
-|---|---|
+| Document | Lien                                                                               |
+|---|------------------------------------------------------------------------------------|
+| Plan de Tests | [`TESTING.md`](./TESTING.md)                                                       |
+| Garanti de Sécurité | [`SECURITY.md`](./SECURITY.md)                                                     |
+| Suivi de Performance | [`TPERF.md`](./PERF.md)                                                            |
+| Documentation de Maintenance | [`MAINTENANCE.md`](./MAINTENANCE.md)                                                             |
 | Stack technique & justification | [`docs/conception/01-stack-technique.md`](./docs/conception/01-stack-technique.md) |
-| Architecture logicielle | [`docs/conception/02-architecture.md`](./docs/conception/02-architecture.md) |
-| MCD | [`docs/conception/03-mcd.md`](./docs/conception/03-mcd.md) |
-| Contrat d'interface OpenAPI | [`docs/conception/04-openapi.yaml`](./docs/conception/04-openapi.yaml) |
+| Architecture logicielle | [`docs/conception/02-architecture.md`](./docs/conception/02-architecture.md)       |
+| MCD | [`docs/conception/03-mcd.md`](./docs/conception/03-mcd.md)                         |
+| Contrat d'interface OpenAPI | [`docs/conception/04-openapi.yaml`](./docs/conception/04-openapi.yaml)             |
 
 ## Licence
 
