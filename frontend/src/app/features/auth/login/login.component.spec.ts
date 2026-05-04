@@ -25,16 +25,17 @@ describe('LoginComponent', () => {
 
   afterEach(() => httpMock.verify());
 
-  it('formulaire invalide → submit ne déclenche aucun appel HTTP', () => {
+  it('formulaire invalide => submit ne declenche aucun appel HTTP', () => {
     const fixture = TestBed.createComponent(LoginComponent);
     fixture.detectChanges();
     const cmp = fixture.componentInstance as any;
 
     cmp.submit();
     httpMock.expectNone(`${environment.apiBaseUrl}/auth/login`);
+    expect(cmp.form.invalid).toBeTrue();
   });
 
-  it('formulaire valide → POST /auth/login + navigate("/")', () => {
+  it('formulaire valide => POST /auth/login + navigate(/dashboard)', () => {
     const fixture = TestBed.createComponent(LoginComponent);
     fixture.detectChanges();
     const cmp = fixture.componentInstance as any;
@@ -51,10 +52,10 @@ describe('LoginComponent', () => {
       user: { id: '1', email: 'claire@example.com', createdAt: new Date().toISOString() }
     });
 
-    expect(router.navigate).toHaveBeenCalledWith(['/']);
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   });
 
-  it('401 → message d’erreur visible', () => {
+  it('401 => message erreur invalide', () => {
     const fixture = TestBed.createComponent(LoginComponent);
     fixture.detectChanges();
     const cmp = fixture.componentInstance as any;
@@ -68,5 +69,34 @@ describe('LoginComponent', () => {
     );
 
     expect(cmp.errorMessage()).toBe('Email ou mot de passe invalide.');
+  });
+
+  it('status 0 => message serveur injoignable', () => {
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.detectChanges();
+    const cmp = fixture.componentInstance as any;
+
+    cmp.form.setValue({ email: 'claire@example.com', password: 'S3cret!1234' });
+    cmp.submit();
+
+    httpMock.expectOne(`${environment.apiBaseUrl}/auth/login`).error(new ProgressEvent('error'));
+
+    expect(cmp.errorMessage()).toBe('Impossible de joindre le serveur.');
+  });
+
+  it('500 => message erreur generique du serveur', () => {
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.detectChanges();
+    const cmp = fixture.componentInstance as any;
+
+    cmp.form.setValue({ email: 'claire@example.com', password: 'S3cret!1234' });
+    cmp.submit();
+
+    httpMock.expectOne(`${environment.apiBaseUrl}/auth/login`).flush(
+      { message: 'Erreur interne' },
+      { status: 500, statusText: 'Internal Server Error' }
+    );
+
+    expect(cmp.errorMessage()).toBe('Erreur interne');
   });
 });

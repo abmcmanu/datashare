@@ -85,6 +85,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
 
+    @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
+    public ResponseEntity<ApiError> handleConstraintViolation(
+            jakarta.validation.ConstraintViolationException ex, HttpServletRequest req) {
+        ApiError body = ApiError.of(400, "Bad Request", "VALIDATION_ERROR",
+            ex.getMessage(), req.getRequestURI());
+        return ResponseEntity.badRequest().body(body);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
         List<ApiError.FieldError> fields = ex.getBindingResult().getFieldErrors().stream()

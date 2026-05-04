@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClient, HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
-  HttpClientTestingModule,
-  HttpTestingController
+  HttpTestingController,
+  provideHttpClientTesting
 } from '@angular/common/http/testing';
 
 import { jwtInterceptor } from './jwt.interceptor';
@@ -17,10 +17,10 @@ describe('jwtInterceptor', () => {
   beforeEach(() => {
     sessionStorage.clear();
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         AuthService,
-        provideHttpClient(withInterceptors([jwtInterceptor]))
+        provideHttpClient(withInterceptors([jwtInterceptor])),
+        provideHttpClientTesting()
       ]
     });
     http = TestBed.inject(HttpClient);

@@ -30,6 +30,8 @@ frontend/coverage/
 frontend/out-tsc/
 frontend/.npm/
 frontend/npm-debug.log*
+frontend/coverage/*
+frontend/coverage
 
 # ---- IDE ----
 .idea/
@@ -59,8 +61,10 @@ backup_*.sql
 
 # ---- Couverture ----
 backend/target/site/jacoco/
-frontend/coverage/
+
 
 # ---- local usage ----
 screenshoot
 P3+EDO+P4+AL+-+Spécifications+pour+l’application.pdf
+P3+EDO+P4+AL+-+Sp\303\251cifications+pour+l\342\200\231application.pdf
+frontend/pnpm-lock.yaml

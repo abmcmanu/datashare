@@ -86,6 +86,7 @@ public class FileRecord {
                       String passwordHash,
                       OffsetDateTime expiresAt) {
         this.id = UUID.randomUUID();
+        this.createdAt = OffsetDateTime.now();
         this.owner = owner;
         this.downloadToken = Objects.requireNonNull(downloadToken);
         this.originalFilename = Objects.requireNonNull(originalFilename);
