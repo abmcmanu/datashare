@@ -43,7 +43,7 @@ Les tests E2E simulent le parcours d'un utilisateur réel. Ils sont réalisés a
 ```bash
 cd backend
 # Lance les tests, génère le rapport ET vérifie le seuil de 70%
-./mvnw clean verify
+mvn clean verify
 ```
 
 Le rapport HTML s'ouvre dans :
