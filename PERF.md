@@ -80,5 +80,6 @@ Les métriques critiques surveillées en production sont :
 
 *(Capture d'écran indicative d'un rapport Lighthouse ou d'un dashboard Grafana)*
 
-![Performances Lighthouse Dashboard](/screenshoot/perf_report_placeholder.png)
+![Performances Lighthouse Dashboard](https://raw.githubusercontent.com/abmcmanu/datashare/main/public/perf_report.png)
 *(Remarque : cette image est un espace réservé illustrant les performances Chrome Lighthouse - Score 90+ attendu).*
+
