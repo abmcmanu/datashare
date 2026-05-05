@@ -1,0 +1,71 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: datashare
+
+resources:
+  - ../../base
+
+patches:
+  # Scale-out en production
+  - patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+    target:
+      kind: Deployment
+      name: backend
+
+  - patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
+    target:
+      kind: Deployment
+      name: frontend
+
+  # Hostname de production
+  - patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: datashare.example.com
+    target:
+      kind: Ingress
+      name: datashare
+
+  # TLS en production
+  - patch: |-
+      - op: add
+        path: /spec/tls
+        value:
+          - hosts:
+              - datashare.example.com
+            secretName: datashare-tls
+      - op: add
+        path: /metadata/annotations/nginx.ingress.kubernetes.io~1ssl-redirect
+        value: "true"
+    target:
+      kind: Ingress
+      name: datashare
+
+  # PVC plus grand en prod
+  - patch: |-
+      - op: replace
+        path: /spec/resources/requests/storage
+        value: 100Gi
+    target:
+      kind: PersistentVolumeClaim
+      name: uploads-pvc
+
+# En production : secrets gérés via un gestionnaire externe (Vault, Sealed Secrets…)
+# Créer manuellement :
+#   kubectl create secret generic postgres-secret \
+#     --from-literal=database=datashare \
+#     --from-literal=username=datashare \
+#     --from-literal=password=<STRONG_PASSWORD> \
+#     -n datashare
+#
+#   kubectl create secret generic backend-secret \
+#     --from-literal=jwt-secret=<GENERATED_WITH_openssl_rand_base64_48> \
+#     --from-literal=cors-origins=https://datashare.example.com \
+#     -n datashare

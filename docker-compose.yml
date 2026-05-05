@@ -1,0 +1,122 @@
+# docker-compose.yml — stack production DataShare
+# Usage : cp .env.example .env && docker compose up -d --build
+#
+# Réseaux :
+#   frontend-net  : frontend ↔ backend  (HTTP /api/)
+#   backend-net   : backend  ↔ postgres (JDBC)
+
+services:
+
+  # ── Postgres ────────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    networks: [backend-net]
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-datashare}
+      POSTGRES_USER:     ${POSTGRES_USER:-datashare}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      TZ: UTC
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    tmpfs:
+      - /tmp
+      - /run
+    read_only: true
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    cap_add: [SETUID, SETGID, DAC_READ_SEARCH, CHOWN, FOWNER]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-datashare} -d ${POSTGRES_DB:-datashare}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    deploy:
+      resources:
+        limits:   { cpus: "1.0", memory: 512M }
+        reservations: { memory: 128M }
+
+  # ── Backend Spring Boot ─────────────────────────────────────────────────────
+  backend:
+    build:
+      context:    ./backend
+      dockerfile: ../ops/backend/Dockerfile
+    restart: unless-stopped
+    networks: [frontend-net, backend-net]
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DATASHARE_DB_URL:        ${DATASHARE_DB_URL:-jdbc:postgresql://postgres:5432/datashare}
+      DATASHARE_DB_USER:       ${DATASHARE_DB_USER:-datashare}
+      DATASHARE_DB_PASSWORD:   ${DATASHARE_DB_PASSWORD}
+      DATASHARE_DB_POOL_SIZE:  ${DATASHARE_DB_POOL_SIZE:-20}
+      DATASHARE_JWT_SECRET:    ${DATASHARE_JWT_SECRET}
+      DATASHARE_CORS_ORIGINS:  ${DATASHARE_CORS_ORIGINS:-http://localhost:8080}
+      DATASHARE_STORAGE_PATH:  /app/uploads
+      TZ: UTC
+    volumes:
+      - uploads:/app/uploads
+    tmpfs:
+      - /tmp
+    read_only: true
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7777/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:   { cpus: "2.0", memory: 1G }
+        reservations: { memory: 256M }
+
+  # ── Frontend Angular + nginx ────────────────────────────────────────────────
+  frontend:
+    build:
+      context:    ./frontend
+      dockerfile: ../ops/frontend/Dockerfile
+    restart: unless-stopped
+    networks: [frontend-net]
+    ports:
+      - "8080:8080"
+    tmpfs:
+      - /tmp/nginx_client_body
+      - /tmp/nginx_proxy
+      - /tmp/nginx_fastcgi
+      - /tmp/nginx_uwsgi
+      - /tmp/nginx_scgi
+      - /tmp
+      - /var/cache/nginx
+    read_only: true
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:   { cpus: "0.5", memory: 128M }
+        reservations: { memory: 32M }
+
+volumes:
+  pg-data:
+    name: datashare-pg
+  uploads:
+    name: datashare-uploads
+
+networks:
+  frontend-net:
+    name: datashare-frontend
+  backend-net:
+    name: datashare-backend

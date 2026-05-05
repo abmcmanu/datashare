@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: datashare
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  DATASHARE_DB_URL: "jdbc:postgresql://postgres:5432/datashare"
+  DATASHARE_DB_POOL_SIZE: "20"
+  DATASHARE_STORAGE_PATH: "/app/uploads"
+  TZ: "UTC"
